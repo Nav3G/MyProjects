@@ -44,3 +44,11 @@ int Framebuffer::getHeight() {
 int Framebuffer::getWidth() {
 	return width;
 }
+std::vector<Color>& Framebuffer::getColorBuffer()
+{
+	return colorBuffer;
+}
+std::vector<float>& Framebuffer::getDepthBuffer()
+{
+	return depthBuffer;
+}

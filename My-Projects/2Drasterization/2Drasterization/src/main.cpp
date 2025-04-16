@@ -1,78 +1,84 @@
 ﻿#include "Triangle.h"
+#include "Framebuffer.h"
 #include "Color.h"
 
 #include <fstream>
-#include <algorithm>
 #include <vector>
 #include <iostream>
 
 int main()
 {
     // Initialize a flat framebuffer of Color objects
-    const int W = 512, H = 512;
-    std::vector<Color> framebuffer(W * H);
+    Framebuffer fb(500, 500);
 
-    // Clear the framebuffer: set every pixel to gray
-    Color bg{ 30, 30, 30 };
-    for (int y = 0; y < H; ++y)
+    // Initialize a scene: vector of triangles
+    Triangle t1({ 100, 50, 0 }, { 400, 150, 0 }, { 250, 400, 0 },
+        Color(255, 0, 0), Color(0, 100, 0), Color(0, 0, 255));
+    Triangle t2({ 100, 200, 10 }, { 300, 180, 10 }, { 300, 200, 10 },
+        Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 100));
+    Triangle t3({ 150, 50, 20 }, { 280, 150, 20 }, { 150, 300, 20 },
+        Color(100, 0, 0), Color(0, 255, 0), Color(0, 0, 255));
+
+    std::vector<Triangle> scene = { t1, t2, t3 };
+
+    // Clear each frame
+    fb.clearColor(Color(30, 30, 30));
+    fb.clearDepth(std::numeric_limits<float>::max());
+
+
+    for (const Triangle& tri : scene)
     {
-        for (int x = 0; x < W; ++x)
+        // Compute the bounding box around the triangle to minimize calculation
+        int minX = std::min({ tri.v0.x, tri.v1.x, tri.v2.x });
+        int maxX = std::max({ tri.v0.x, tri.v1.x, tri.v2.x });
+        int minY = std::min({ tri.v0.y, tri.v1.y, tri.v2.y });
+        int maxY = std::max({ tri.v0.y, tri.v1.y, tri.v2.y });
+
+        minX = std::max(minX, 0);
+        maxX = std::min(maxX, fb.getWidth() - 1);
+        minY = std::max(minY, 0);
+        maxY = std::min(maxY, fb.getHeight() - 1);
+
+        // Raster loop using the triangle's edge function
+        for (int y = minY; y <= maxY; y++)
         {
-            size_t idx = y * W + x;
-            framebuffer[idx] = bg;
-        }
-    }
-
-    // Initialize a triangle object
-    Triangle triangle({ 100, 50 }, { 400, 150 }, { 250, 400 },
-        Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255));
-
-    // Compute the bounding box around the triangle to minimize calculation
-    int minX = std::min({ triangle.v0.x, triangle.v1.x, triangle.v2.x });
-    int maxX = std::max({ triangle.v0.x, triangle.v1.x, triangle.v2.x });
-    int minY = std::min({ triangle.v0.y, triangle.v1.y, triangle.v2.y });
-    int maxY = std::max({ triangle.v0.y, triangle.v1.y, triangle.v2.y });
-
-    minX = std::max(minX, 0);
-    maxX = std::min(maxX, W - 1);
-    minY = std::max(minY, 0);
-    maxY = std::min(maxY, H - 1);
-
-    // Raster loop using the triangle's edge function
-    Color triColor = { 0, 255, 0 };
-
-    for (int y = minY; y <= maxY; y++)
-    {
-        for (int x = minX; x <= maxX; x++)
-        {
-            // 1) Compute the center of the test pixel
-            Vec2 p(x + 0.5f, y + 0.5f);
-
-            if (triangle.contains(p))
+            for (int x = minX; x <= maxX; x++)
             {
-                // 2) Compute barycentrics for color interpolation
-                Triangle::Barycentrics bary = triangle.computeBarycentrics(p);
+                // 1) Compute the center of the test pixel
+                Vec3 p(x + 0.5f, y + 0.5f, 0);
 
-                // 3) Interpolate based on the barycentric weighting given to each vertex
-                Color interpColor = triangle.interpolateColor(bary);
+                if (tri.contains(p))
+                {
+                    // 2) Compute barycentrics for color interpolation
+                    Triangle::Barycentrics bary = tri.computeBarycentrics(p);
 
-                // 4) Set the pixel in the framebuffer to the triangle's interpolated color
-                framebuffer[y * W + x] = interpColor;
+                    // 3) Interpolate depth (blend them together via the barycentric 
+                    // weighting on each vertex
+                    float interpDepth = bary.alpha * tri.v0.z +
+                        bary.beta * tri.v1.z +
+                        bary.gamma * tri.v2.z;
+
+                    // 4) Set the pixel in the framebuffer to the triangle's interpolated color
+                    int index = y * fb.getWidth() + x;
+                    if (interpDepth < fb.getDepthBuffer()[index]) {  // fb.depthBuffer is your depth buffer array
+                        // Update the depth buffer:
+                        if (interpDepth < fb.getDepthBuffer()[index]) {  // fb.depthBuffer is your depth buffer array
+                            fb.getDepthBuffer()[index] = interpDepth;
+
+                            // Interpolate the color using barycentrics:
+                            Color interpColor = tri.interpolateColor(bary);
+
+                            // Set the pixel in the color buffer:
+                            fb.setPixel(x, y, interpColor, interpDepth);
+                        }
+                    }
+                }
             }
         }
     }
 
     // Dump to PPM
-    std::ofstream ofs("rendered.ppm", std::ios::binary);
-    ofs << "P6\n" << W << " " << H << "\n255\n";
-    for (size_t i = 0; i < framebuffer.size(); ++i) {
-        // PPM requires raw RGB bytes
-        ofs.put(framebuffer[i].r);
-        ofs.put(framebuffer[i].g);
-        ofs.put(framebuffer[i].b);
-    }
-    ofs.close();
-    std::cout << "Wrote output.ppm\n";
+    fb.saveToPPM("rendered.ppm");
 
     return 0;
 }

@@ -1,7 +1,7 @@
 #include "Triangle.h"
 
 // Constructors
-Triangle::Triangle(const Vec2& a, const Vec2& b, const Vec2& c,
+Triangle::Triangle(const Vec3& a, const Vec3& b, const Vec3& c,
     const Color col0, const Color col1, const Color col2)
 {
     v0 = a;
@@ -13,7 +13,7 @@ Triangle::Triangle(const Vec2& a, const Vec2& b, const Vec2& c,
     color2 = col2;
 }
 
-Triangle::Triangle(const Vec2& a, const Vec2& b, const Vec2& c)
+Triangle::Triangle(const Vec3& a, const Vec3& b, const Vec3& c)
 {
     v0 = a;
     v1 = b;
@@ -21,13 +21,13 @@ Triangle::Triangle(const Vec2& a, const Vec2& b, const Vec2& c)
 }
 
 // Utility functions
-float Triangle::edgeFunction(const Vec2& a, const Vec2& b, const Vec2& p) const
+float Triangle::edgeFunction(const Vec3& a, const Vec3& b, const Vec3& p) const
 {
     // AB x AP = (b - a) x (p - a)
     return (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
 }
 
-Triangle::Barycentrics Triangle::computeBarycentrics(const Vec2& p) const
+Triangle::Barycentrics Triangle::computeBarycentrics(const Vec3& p) const
 {
     float totalArea = edgeFunction(v0, v1, v2);
 
@@ -38,7 +38,7 @@ Triangle::Barycentrics Triangle::computeBarycentrics(const Vec2& p) const
     return { alpha, beta, gamma };
 }
 
-bool Triangle::contains(const Vec2& p) const
+bool Triangle::contains(const Vec3& p) const
 {
     Barycentrics bary = computeBarycentrics(p);
     return (bary.alpha >= 0 && bary.beta >= 0 && bary.gamma >= 0);

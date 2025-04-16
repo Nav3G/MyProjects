@@ -29,5 +29,7 @@ public:
     // Utility methods, such as getting width and height
     int getHeight();
     int getWidth();
+    std::vector<Color>& getColorBuffer();
+    std::vector<float>& getDepthBuffer();
 };
 
