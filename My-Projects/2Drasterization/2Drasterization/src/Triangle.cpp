@@ -44,7 +44,7 @@ bool Triangle::contains(const Vec2& p) const
     return (bary.alpha >= 0 && bary.beta >= 0 && bary.gamma >= 0);
 }
 
-Color Triangle::inerpolateColor(Barycentrics bary) const
+Color Triangle::interpolateColor(Barycentrics bary) const
 {
     float r = bary.alpha * (color0.r) + bary.beta * (color1.r) + bary.gamma * (color2.r);
     float g = bary.alpha * (color0.g) + bary.beta * (color1.g) + bary.gamma * (color2.g);

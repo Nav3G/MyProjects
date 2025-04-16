@@ -131,15 +131,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Framebuffer.cpp" />
     <ClCompile Include="src\Color.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Vec2.cpp" />
     <ClCompile Include="src\Triangle.cpp" />
+    <ClCompile Include="src\Vec3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="includes\Framebuffer.h" />
     <ClInclude Include="includes\Color.h" />
     <ClInclude Include="includes\Vec2.h" />
     <ClInclude Include="includes\Triangle.h" />
+    <ClInclude Include="includes\Vec3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

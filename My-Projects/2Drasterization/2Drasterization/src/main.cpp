@@ -45,7 +45,7 @@ int main()
     {
         for (int x = minX; x <= maxX; x++)
         {
-            // 1) Compute the center of the pixel
+            // 1) Compute the center of the test pixel
             Vec2 p(x + 0.5f, y + 0.5f);
 
             if (triangle.contains(p))
@@ -54,7 +54,7 @@ int main()
                 Triangle::Barycentrics bary = triangle.computeBarycentrics(p);
 
                 // 3) Interpolate based on the barycentric weighting given to each vertex
-                Color interpColor = triangle.inerpolateColor(bary);
+                Color interpColor = triangle.interpolateColor(bary);
 
                 // 4) Set the pixel in the framebuffer to the triangle's interpolated color
                 framebuffer[y * W + x] = interpColor;

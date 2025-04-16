@@ -30,7 +30,7 @@ Vec2 Vec2::operator/(float scalar) const
 }
 
 // Utility Methods
-float Vec2::dotProd(const Vec2& other) const
+float Vec2::dot(const Vec2& other) const
 {
     return x * other.x + y * other.y;
 }

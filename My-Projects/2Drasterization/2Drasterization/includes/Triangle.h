@@ -28,6 +28,6 @@ public:
     float edgeFunction(const Vec2& a, const Vec2& b, const Vec2& p) const;
     Barycentrics computeBarycentrics(const Vec2& p) const;
 
-    Color inerpolateColor(Barycentrics bary) const;
+    Color interpolateColor(Barycentrics bary) const;
     bool contains(const Vec2& p) const;
 };

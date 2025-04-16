@@ -18,7 +18,7 @@ public:
     Vec2 operator/(float scalar) const;
 
     // Utility Methods
-    float dotProd(const Vec2& other) const;
+    float dot(const Vec2& other) const;
     float magnitude() const;
     Vec2 normalize() const;
 };
