@@ -3,8 +3,16 @@
   "WorkspaceRootPath": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Triangle.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\Triangle.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Triangle.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\includes\\Triangle.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,17 +22,17 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "main.cpp",
               "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\main.cpp",
               "RelativeDocumentMoniker": "2Drasterization\\src\\main.cpp",
               "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\main.cpp",
               "RelativeToolTip": "2Drasterization\\src\\main.cpp",
-              "ViewState": "AgIAABsAAAAAAAAAAAAAADoAAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAADoAAABVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-04-15T22:04:20.942Z",
               "IsPinned": true,
@@ -33,6 +41,32 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Triangle.h",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Triangle.h",
+              "RelativeDocumentMoniker": "2Drasterization\\includes\\Triangle.h",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Triangle.h",
+              "RelativeToolTip": "2Drasterization\\includes\\Triangle.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-15T22:21:45.196Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Triangle.cpp",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Triangle.cpp",
+              "RelativeDocumentMoniker": "2Drasterization\\src\\Triangle.cpp",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Triangle.cpp",
+              "RelativeToolTip": "2Drasterization\\src\\Triangle.cpp",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABkAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-15T22:21:44.477Z",
+              "EditorCaption": ""
             }
           ]
         }

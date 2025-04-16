@@ -24,7 +24,8 @@ int main()
     }
 
     // Initialize a triangle object
-    Triangle triangle({ 100, 50 }, { 400, 150 }, { 250, 400 });
+    Triangle triangle({ 100, 50 }, { 400, 150 }, { 250, 400 },
+        Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255));
 
     // Compute the bounding box around the triangle to minimize calculation
     int minX = std::min({ triangle.v0.x, triangle.v1.x, triangle.v2.x });
@@ -44,13 +45,19 @@ int main()
     {
         for (int x = minX; x <= maxX; x++)
         {
-            // Compute the center of the pixel
+            // 1) Compute the center of the pixel
             Vec2 p(x + 0.5f, y + 0.5f);
 
             if (triangle.contains(p))
             {
-                // Set the pixel in the framebuffer to the triangle color
-                framebuffer[y * W + x] = triColor;
+                // 2) Compute barycentrics for color interpolation
+                Triangle::Barycentrics bary = triangle.computeBarycentrics(p);
+
+                // 3) Interpolate based on the barycentric weighting given to each vertex
+                Color interpColor = triangle.inerpolateColor(bary);
+
+                // 4) Set the pixel in the framebuffer to the triangle's interpolated color
+                framebuffer[y * W + x] = interpColor;
             }
         }
     }

@@ -1,9 +1,10 @@
-﻿  main.cpp
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(30,14): warning C4244: 'initializing': conversion from '_Ty' to 'int', possible loss of data
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(30,14): warning C4244:         with
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(30,14): warning C4244:         [
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(30,14): warning C4244:             _Ty=float
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(30,14): warning C4244:         ]
+﻿  Color.cpp
+  Triangle.cpp
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Triangle.cpp(53,24): warning C4244: 'argument': conversion from 'float' to 'uint8_t', possible loss of data
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Triangle.cpp(53,21): warning C4244: 'argument': conversion from 'float' to 'uint8_t', possible loss of data
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Triangle.cpp(53,18): warning C4244: 'argument': conversion from 'float' to 'uint8_t', possible loss of data
+  Vec2.cpp
+  main.cpp
 E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(31,14): warning C4244: 'initializing': conversion from '_Ty' to 'int', possible loss of data
 E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(31,14): warning C4244:         with
 E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(31,14): warning C4244:         [
@@ -19,4 +20,10 @@ E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasteri
 E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(33,14): warning C4244:         [
 E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(33,14): warning C4244:             _Ty=float
 E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(33,14): warning C4244:         ]
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(34,14): warning C4244: 'initializing': conversion from '_Ty' to 'int', possible loss of data
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(34,14): warning C4244:         with
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(34,14): warning C4244:         [
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(34,14): warning C4244:             _Ty=float
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(34,14): warning C4244:         ]
+  Generating Code...
   2Drasterization.vcxproj -> E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\x64\Debug\2Drasterization.exe

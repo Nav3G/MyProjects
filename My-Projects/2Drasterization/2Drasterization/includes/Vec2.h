@@ -1,4 +1,7 @@
 #pragma once
+
+#include "Color.h"
+
 class Vec2
 {
 public:
