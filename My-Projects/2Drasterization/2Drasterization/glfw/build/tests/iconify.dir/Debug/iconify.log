@@ -1,0 +1,5 @@
+﻿  Building Custom Rule C:/Users/Evan/Downloads/glfw-3.4/tests/CMakeLists.txt
+  iconify.c
+  getopt.c
+  Generating Code...
+  iconify.vcxproj -> C:\Users\Evan\Downloads\glfw-3.4\build\tests\Debug\iconify.exe

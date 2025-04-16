@@ -76,11 +76,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\includes;E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\glad\include;E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -91,13 +93,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\includes;E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\glad\include;E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -106,11 +110,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\includes;E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\glad\include;E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -121,16 +127,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\includes;E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\glad\include;E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="C:\Users\Evan\Downloads\glad\src\glad.c" />
     <ClCompile Include="src\Framebuffer.cpp" />
     <ClCompile Include="src\Color.cpp" />
     <ClCompile Include="src\main.cpp" />

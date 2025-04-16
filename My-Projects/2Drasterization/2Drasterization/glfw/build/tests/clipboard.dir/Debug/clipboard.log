@@ -1,0 +1,5 @@
+﻿  Building Custom Rule C:/Users/Evan/Downloads/glfw-3.4/tests/CMakeLists.txt
+  clipboard.c
+  getopt.c
+  Generating Code...
+  clipboard.vcxproj -> C:\Users\Evan\Downloads\glfw-3.4\build\tests\Debug\clipboard.exe

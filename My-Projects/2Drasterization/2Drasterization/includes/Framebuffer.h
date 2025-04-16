@@ -31,5 +31,7 @@ public:
     int getWidth();
     std::vector<Color>& getColorBuffer();
     std::vector<float>& getDepthBuffer();
+    void setColorBuffer(Color color, int y, int x);
+    void setDepthBuffer(float depth, int y, int x);
 };
 

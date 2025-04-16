@@ -1,0 +1,3 @@
+﻿main.obj : error LNK2019: unresolved external symbol _glfwGetProcAddress referenced in function _main
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\glfw\build\src\Debug\glfw3.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'x86'
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\Debug\2Drasterization.exe : fatal error LNK1120: 1 unresolved externals
