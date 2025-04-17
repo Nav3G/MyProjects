@@ -146,6 +146,7 @@
     <ClCompile Include="src\Vec2.cpp" />
     <ClCompile Include="src\Triangle.cpp" />
     <ClCompile Include="src\Vec3.cpp" />
+    <ClCompile Include="src\Vec4.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\Framebuffer.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="includes\Vec2.h" />
     <ClInclude Include="includes\Triangle.h" />
     <ClInclude Include="includes\Vec3.h" />
+    <ClInclude Include="includes\Vec4.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

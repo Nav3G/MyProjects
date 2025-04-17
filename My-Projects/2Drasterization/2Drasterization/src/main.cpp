@@ -159,9 +159,9 @@ int main()
     Framebuffer fb(fbWidth, fbHeight);
 
     // Prepare a scene with several triangles.
-    Triangle t1({ 100, 50, 0 }, { 400, 150, 0 }, { 250, 400, 0 },
+    Triangle t1({ 100, 50, 0 }, { 400, 150, 0 }, { 350, 400, 25 },
         Color(255, 0, 0), Color(0, 100, 0), Color(0, 0, 255));
-    Triangle t2({ 100, 200, 10 }, { 300, 180, 10 }, { 300, 200, 10 },
+    Triangle t2({ 100, 200, 10 }, { 300, 50, 15 }, { 300, 200, 10 },
         Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 100));
     Triangle t3({ 150, 50, 20 }, { 280, 150, 20 }, { 150, 300, 20 },
         Color(100, 0, 0), Color(0, 255, 0), Color(0, 0, 255));
@@ -179,20 +179,13 @@ int main()
         // Rasterize each triangle onto the framebuffer.
         for (const Triangle& tri : scene)
         {
-            // Compute the bounding box for the triangle.
-            int minX = std::min({ tri.v0.x, tri.v1.x, tri.v2.x });
-            int maxX = std::max({ tri.v0.x, tri.v1.x, tri.v2.x });
-            int minY = std::min({ tri.v0.y, tri.v1.y, tri.v2.y });
-            int maxY = std::max({ tri.v0.y, tri.v1.y, tri.v2.y });
-            minX = std::max(minX, 0);
-            maxX = std::min(maxX, fb.getWidth() - 1);
-            minY = std::max(minY, 0);
-            maxY = std::min(maxY, fb.getHeight() - 1);
+            // Initialize and compute the bounding box for the given triangle.
+            Triangle::Boundingbox bbox = tri.getBoundingBox(fb.getWidth(), fb.getHeight());
 
             // Loop over pixels in the bounding box.
-            for (int y = minY; y <= maxY; y++)
+            for (int y = bbox.minY; y <= bbox.maxY; y++)
             {
-                for (int x = minX; x <= maxX; x++)
+                for (int x = bbox.minX; x <= bbox.maxX; x++)
                 {
                     // Compute the center of the pixel.
                     Vec3 p(x + 0.5f, y + 0.5f, 0);
@@ -200,8 +193,7 @@ int main()
                     {
                         Triangle::Barycentrics bary = tri.computeBarycentrics(p);
                         // Interpolate depth.
-                        float interpDepth = bary.alpha * tri.v0.z +
-                            bary.beta * tri.v1.z + bary.gamma * tri.v2.z;
+                        float interpDepth = tri.interpolateDepth(bary);
                         int index = y * fb.getWidth() + x;
                         // Depth test.
                         if (interpDepth < fb.getDepthBuffer()[index]) {
@@ -214,6 +206,7 @@ int main()
             }
         }
 
+#pragma region update/render to window
         // Update the OpenGL texture with the framebuffer's color buffer.
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, fbWidth, fbHeight, GL_RGB, GL_UNSIGNED_BYTE, fb.getColorBuffer().data());
@@ -228,6 +221,7 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+#pragma endregion
 
     // Cleanup resources.
     glDeleteVertexArrays(1, &quadVAO);

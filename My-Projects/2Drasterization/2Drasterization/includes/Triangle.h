@@ -14,6 +14,11 @@ public:
     {
         float alpha, beta, gamma;
     };
+    // Struct for bouding box dimensions
+    struct Boundingbox
+    {
+        int minX, minY, maxX, maxY;
+    };
 
     // Member variables
     Vec3 v0, v1, v2;
@@ -29,6 +34,11 @@ public:
     float edgeFunction(const Vec3& a, const Vec3& b, const Vec3& p) const;
     Barycentrics computeBarycentrics(const Vec3& p) const;
 
+    // 2) Color/depth interpolation and internal point existence
     Color interpolateColor(Barycentrics bary) const;
+    float interpolateDepth(Barycentrics bary) const;
     bool contains(const Vec3& p) const;
+
+    // 3) Bounding box determination 
+    Boundingbox getBoundingBox(int fbWidth, int fbHeight) const;
 };

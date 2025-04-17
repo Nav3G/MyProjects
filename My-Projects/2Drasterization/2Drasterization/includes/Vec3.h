@@ -7,7 +7,7 @@
 class Vec3
 {
 public:
-    float x, y, z;
+    float x_, y_, z_;
 
     // Constructors: default and parameterized
     Vec3(); // Defaults to (0, 0, 0)
