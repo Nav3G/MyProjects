@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="C:\Users\Evan\Downloads\glad\src\glad.c" />
+    <ClCompile Include="src\Matrix4.cpp" />
     <ClCompile Include="src\Framebuffer.cpp" />
     <ClCompile Include="src\Color.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="includes\Triangle.h" />
     <ClInclude Include="includes\Vec3.h" />
     <ClInclude Include="includes\Vec4.h" />
+    <ClInclude Include="includes\Matrix4.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
