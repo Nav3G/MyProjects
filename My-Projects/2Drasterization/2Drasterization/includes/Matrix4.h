@@ -2,6 +2,7 @@
 #include "Vec4.h"
 #include "Vec3.h"
 #include <stdexcept>
+#include <cmath>
 
 class Matrix4
 {
@@ -23,11 +24,14 @@ public:
 	Vec4 operator*(const Vec4& v) const;
 
 	// Helpers
+	/// Transformation
 	static Matrix4 translation(float tx, float ty, float tz);
 	static Matrix4 scaling(float sx, float sy, float sz);
 	static Matrix4 rotationX(float radians);
 	static Matrix4 rotationY(float radians);
 	static Matrix4 rotationZ(float radians);
+
+	/// Camera
 	static Matrix4 perspective(float fovY, float aspect, float near, float far);
 	static Matrix4 orthographic(float left, float right, float bottom, float top, float near, float far);
 	static Matrix4 lookAt(const Vec3& eye, const Vec3& target, const Vec3& up);

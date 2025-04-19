@@ -54,9 +54,9 @@ std::vector<float>& Framebuffer::getDepthBuffer()
 }
 void Framebuffer::setColorBuffer(Color color, int y, int x)
 {
-	colorBuffer[y * width + x];
+	colorBuffer[y * width + x] = color;
 }
 void Framebuffer::setDepthBuffer(float depth, int y, int x)
 {
-	depthBuffer[y * width + x];
+	depthBuffer[y * width + x] = depth;
 }

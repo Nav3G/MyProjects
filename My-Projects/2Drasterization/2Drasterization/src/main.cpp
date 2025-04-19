@@ -2,6 +2,8 @@
 #include "Framebuffer.h"
 #include "Color.h"
 #include "Vec3.h"
+#include "Vec4.h"
+#include "Matrix4.h"
 
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
@@ -85,6 +87,47 @@ GLuint compileShaderProgram() {
     return shaderProgram;
 }
 #pragma endregion   
+static Matrix4 gViewMatrix = Matrix4::identity();
+
+// --- at the top, before main() ---
+static float cameraYaw = -90.0f;   // degrees, around Y
+static float cameraPitch = 20.0f;   // degrees, up/down
+static float cameraDist = 5.0f;   // radius from target
+static const Vec3 cameraTarget(0.0f, 0.0f, 0.0f);
+
+// helper to convert degrees→radians
+inline float deg2rad(float d) { return d * 3.14159265f / 180.0f; }
+
+// call this each frame before computing V
+void updateCameraFromInput(GLFWwindow* window, float deltaTime) {
+    float speedAng = 45.0f;   // deg/sec
+    float speedZoom = 2.0f;  // units/sec
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cameraYaw -= speedAng * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraYaw += speedAng * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraPitch += speedAng * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cameraPitch -= speedAng * deltaTime;
+
+    if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) cameraDist -= speedZoom * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) cameraDist += speedZoom * deltaTime;
+
+    // clamp
+    if (cameraPitch > 89.0f) cameraPitch = 89.0f;
+    if (cameraPitch < -89.0f) cameraPitch = -89.0f;
+    if (cameraDist < 1.0f) cameraDist = 1.0f;
+
+    // compute Cartesian camera position from spherical coords
+    float yawRad = deg2rad(cameraYaw);
+    float pitchRad = deg2rad(cameraPitch);
+
+    Vec3 camPos;
+    camPos.x_ = cameraTarget.x_ + cameraDist * std::cos(pitchRad) * std::cos(yawRad);
+    camPos.y_ = cameraTarget.y_ + cameraDist * std::sin(pitchRad);
+    camPos.z_ = cameraTarget.z_ + cameraDist * std::cos(pitchRad) * std::sin(yawRad);
+
+    // update your view matrix
+    gViewMatrix = Matrix4::lookAt(camPos, cameraTarget, Vec3(0, 1, 0));
+}
 
 int main()
 {
@@ -159,25 +202,102 @@ int main()
     Framebuffer fb(fbWidth, fbHeight);
 
     // Prepare a scene with several triangles.
-    Triangle t1({ 100, 50, 0 }, { 400, 150, 0 }, { 350, 400, 25 },
-        Color(255, 0, 0), Color(0, 100, 0), Color(0, 0, 255));
-    Triangle t2({ 100, 200, 10 }, { 300, 50, 15 }, { 300, 200, 10 },
-        Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 100));
-    Triangle t3({ 150, 50, 20 }, { 280, 150, 20 }, { 150, 300, 20 },
-        Color(100, 0, 0), Color(0, 255, 0), Color(0, 0, 255));
-    std::vector<Triangle> scene = { t1, t2, t3 };
+    std::vector<Triangle> worldScene;
+    worldScene.emplace_back(
+        Vec3(-1.0f, -1.0f, -4.0f),
+        Vec3(1.0f, -1.0f, -1.0f),
+        Vec3(0.0f, 1.0f, -1.0f),
+        Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255)
+    );
+    worldScene.emplace_back(
+        Vec3(-4.0f, -3.0f, -4.0f),
+        Vec3(1.0f, -1.0f, -1.0f),
+        Vec3(0.0f, 1.0f, -3.0f),
+        Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255)
+    );
+
+    auto toScreen = [&](const Vec4& ndc)
+        {
+            float x = (ndc.x() * 0.5f + 0.5f) * fb.getWidth();
+            float y = (1.0f - (ndc.y() * 0.5f + 0.5f)) * fb.getHeight();
+            float z = ndc.z();
+            return Vec3(x, y, z);
+        };
+
+    float lastTime = glfwGetTime();
 
     // Main loop.
     while (!glfwWindowShouldClose(window))
     {
-        // (Optional) Process input/events here.
+        // Process input/events here.
+        float now = glfwGetTime();
+        float dt = now - lastTime;
+        lastTime = now;
 
-        // Clear your software framebuffer.
+        glfwPollEvents();
+        updateCameraFromInput(window, dt);
+
+        // MVP
+        float fovY = 1.0472f;
+        float aspect = float(fb.getWidth()) / float(fb.getHeight());
+        float near = 0.1f;
+        float far = 100.0f;
+
+        Matrix4 P = Matrix4::perspective(fovY, aspect, near, far);
+
+        Matrix4 M = Matrix4::identity();
+
+        Matrix4 V = gViewMatrix;
+
+        Matrix4 MVP = P * gViewMatrix * M;
+
+        // Screen scene
+        std::vector<Triangle> screenScene;
+        screenScene.reserve(worldScene.size());
+        
+        for (const auto& wtri : worldScene)
+        {
+            // Triangle transform;
+            Vec4 h0(wtri.v0.x_, wtri.v0.y_, wtri.v0.z_, 1);
+            Vec4 h1(wtri.v1.x_, wtri.v1.y_, wtri.v1.z_, 1);
+            Vec4 h2(wtri.v2.x_, wtri.v2.y_, wtri.v2.z_, 1);
+
+            Vec4 c0 = MVP * h0;
+            Vec4 c1 = MVP * h1;
+            Vec4 c2 = MVP * h2;
+
+            Vec4 n0 = c0.perspectiveDivide();
+            Vec4 n1 = c1.perspectiveDivide();
+            Vec4 n2 = c2.perspectiveDivide();
+
+            //std::cout << "n0 = (" << n0.x() << "," << n0.y() << "," << n0.z() << ")\n";
+            //std::cout << "n1 = (" << n1.x() << "," << n1.y() << "," << n1.z() << ")\n";
+            //std::cout << "n2 = (" << n2.x() << "," << n2.y() << "," << n2.z() << ")\n";
+
+            Vec3 s0 = toScreen(n0);
+            Vec3 s1 = toScreen(n1);
+            Vec3 s2 = toScreen(n2);
+
+            //std::cout << "s0 = (" << s0.x_ << "," << s0.y_ << "," << s0.z_ << ")\n";
+            //std::cout << "s1 = (" << s1.x_ << "," << s1.y_ << "," << s1.z_ << ")\n";
+            //std::cout << "s2 = (" << s2.x_ << "," << s2.y_ << "," << s2.z_ << ")\n";
+
+            screenScene.emplace_back(
+                Vec3(s0.x_, s0.y_, s0.z_),
+                Vec3(s1.x_, s1.y_, s1.z_),
+                Vec3(s2.x_, s2.y_, s2.z_),
+                wtri.color0,
+                wtri.color1,
+                wtri.color2
+            );
+        }
+
+        // Clear software framebuffer.
         fb.clearColor(Color(30, 30, 30));
         fb.clearDepth(std::numeric_limits<float>::max());
 
         // Rasterize each triangle onto the framebuffer.
-        for (const Triangle& tri : scene)
+        for (const Triangle& tri : screenScene)
         {
             // Initialize and compute the bounding box for the given triangle.
             Triangle::Boundingbox bbox = tri.getBoundingBox(fb.getWidth(), fb.getHeight());
@@ -197,7 +317,6 @@ int main()
                         int index = y * fb.getWidth() + x;
                         // Depth test.
                         if (interpDepth < fb.getDepthBuffer()[index]) {
-                            fb.setDepthBuffer(interpDepth, y, x);
                             Color interpColor = tri.interpolateColor(bary);
                             fb.setPixel(x, y, interpColor, interpDepth);
                         }
