@@ -87,20 +87,20 @@ GLuint compileShaderProgram() {
     return shaderProgram;
 }
 #pragma endregion   
+// Camera movement (view matrix element update)
 static Matrix4 gViewMatrix = Matrix4::identity();
 
-// --- at the top, before main() ---
 static float cameraYaw = -90.0f;   // degrees, around Y
 static float cameraPitch = 20.0f;   // degrees, up/down
-static float cameraDist = 5.0f;   // radius from target
+static float cameraDist = 15.0f;   // radius from target
 static const Vec3 cameraTarget(0.0f, 0.0f, 0.0f);
 
-// helper to convert degrees→radians
+// helper to convert degrees -> radians
 inline float deg2rad(float d) { return d * 3.14159265f / 180.0f; }
 
 // call this each frame before computing V
 void updateCameraFromInput(GLFWwindow* window, float deltaTime) {
-    float speedAng = 45.0f;   // deg/sec
+    float speedAng = 60.0f;   // deg/sec
     float speedZoom = 2.0f;  // units/sec
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cameraYaw -= speedAng * deltaTime;
@@ -125,7 +125,7 @@ void updateCameraFromInput(GLFWwindow* window, float deltaTime) {
     camPos.y_ = cameraTarget.y_ + cameraDist * std::sin(pitchRad);
     camPos.z_ = cameraTarget.z_ + cameraDist * std::cos(pitchRad) * std::sin(yawRad);
 
-    // update your view matrix
+    // update view matrix
     gViewMatrix = Matrix4::lookAt(camPos, cameraTarget, Vec3(0, 1, 0));
 }
 
@@ -143,7 +143,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create a window.
-    GLFWwindow* window = glfwCreateWindow(500, 500, "My Renderer", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1000, 1000, "My Renderer", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
@@ -193,36 +193,26 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    int fbWidth = 500, fbHeight = 500;
+    int fbWidth = 1000, fbHeight = 1000;
     // Allocate empty texture storage.
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fbWidth, fbHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 #pragma endregion
 
-    // Create your software framebuffer.
+    // Create software framebuffer.
     Framebuffer fb(fbWidth, fbHeight);
 
     // Prepare a scene with several triangles.
     std::vector<Triangle> worldScene;
     worldScene.emplace_back(
-        Vec3(-1.0f, -1.0f, -4.0f),
+        Vec3(2.0f, -1.0f, -4.0f),
         Vec3(1.0f, -1.0f, -1.0f),
-        Vec3(0.0f, 1.0f, -1.0f),
-        Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255)
-    );
+        Vec3(0.0f, 1.0f, -3.0f),
+        Color(155, 0, 255), Color(0, 255, 0), Color(0, 0, 255));
     worldScene.emplace_back(
         Vec3(-4.0f, -3.0f, -4.0f),
         Vec3(1.0f, -1.0f, -1.0f),
         Vec3(0.0f, 1.0f, -3.0f),
-        Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255)
-    );
-
-    auto toScreen = [&](const Vec4& ndc)
-        {
-            float x = (ndc.x() * 0.5f + 0.5f) * fb.getWidth();
-            float y = (1.0f - (ndc.y() * 0.5f + 0.5f)) * fb.getHeight();
-            float z = ndc.z();
-            return Vec3(x, y, z);
-        };
+        Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255));
 
     float lastTime = glfwGetTime();
 
@@ -234,6 +224,7 @@ int main()
         float dt = now - lastTime;
         lastTime = now;
 
+        // Camera update. Sets the -z axis to the camera normal
         glfwPollEvents();
         updateCameraFromInput(window, dt);
 
@@ -244,10 +235,8 @@ int main()
         float far = 100.0f;
 
         Matrix4 P = Matrix4::perspective(fovY, aspect, near, far);
-
-        Matrix4 M = Matrix4::identity();
-
         Matrix4 V = gViewMatrix;
+        Matrix4 M = Matrix4::identity();
 
         Matrix4 MVP = P * gViewMatrix * M;
 
@@ -257,15 +246,20 @@ int main()
         
         for (const auto& wtri : worldScene)
         {
-            // Triangle transform;
+            // Triangle transform
+            // 1) World space --> homogenous coords, i.e. with w element = 1
             Vec4 h0(wtri.v0.x_, wtri.v0.y_, wtri.v0.z_, 1);
             Vec4 h1(wtri.v1.x_, wtri.v1.y_, wtri.v1.z_, 1);
             Vec4 h2(wtri.v2.x_, wtri.v2.y_, wtri.v2.z_, 1);
 
+            // 2) MVP transform: perspective --> camera view --> scale
+            // homogenous  --> clip space
             Vec4 c0 = MVP * h0;
             Vec4 c1 = MVP * h1;
             Vec4 c2 = MVP * h2;
 
+            // 3) Perspective divide to map each point to NDC on the [-1, 1]^3 cube
+            // clip space --> NDC
             Vec4 n0 = c0.perspectiveDivide();
             Vec4 n1 = c1.perspectiveDivide();
             Vec4 n2 = c2.perspectiveDivide();
@@ -274,14 +268,16 @@ int main()
             //std::cout << "n1 = (" << n1.x() << "," << n1.y() << "," << n1.z() << ")\n";
             //std::cout << "n2 = (" << n2.x() << "," << n2.y() << "," << n2.z() << ")\n";
 
-            Vec3 s0 = toScreen(n0);
-            Vec3 s1 = toScreen(n1);
-            Vec3 s2 = toScreen(n2);
+            // NDC --> screen space [0, w] x [0, h]
+            Vec3 s0 = fb.toScreen(n0);
+            Vec3 s1 = fb.toScreen(n1);
+            Vec3 s2 = fb.toScreen(n2);
 
             //std::cout << "s0 = (" << s0.x_ << "," << s0.y_ << "," << s0.z_ << ")\n";
             //std::cout << "s1 = (" << s1.x_ << "," << s1.y_ << "," << s1.z_ << ")\n";
             //std::cout << "s2 = (" << s2.x_ << "," << s2.y_ << "," << s2.z_ << ")\n";
 
+            // Fill the screen space sceen array with the transformed triangle
             screenScene.emplace_back(
                 Vec3(s0.x_, s0.y_, s0.z_),
                 Vec3(s1.x_, s1.y_, s1.z_),

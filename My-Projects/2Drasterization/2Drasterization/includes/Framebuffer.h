@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Color.h"
+#include <Vec3.h>
+#include <Vec4.h>
 #include <vector>
 #include <limits>
 #include <iostream>
@@ -25,6 +27,9 @@ public:
 
     // Method to export to a PPM (or another image format)
     void saveToPPM(const std::string& filename) const;
+
+    // Screen space transform
+    Vec3 toScreen(const Vec4& ndc);
 
     // Utility methods, such as getting width and height
     int getHeight();

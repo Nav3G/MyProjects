@@ -1,4 +1,4 @@
 ﻿  main.cpp
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(227,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(233,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(217,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(223,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   2Drasterization.vcxproj -> E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\x64\Debug\2Drasterization.exe

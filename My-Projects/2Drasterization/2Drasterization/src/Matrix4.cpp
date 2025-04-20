@@ -142,9 +142,10 @@ Matrix4 Matrix4::rotationZ(float radians)
 
 // Camera
 /// LookAt
-// We form the camera basis, {facing, right, trueUp}, and then wish to rotate it into the 
-// world space. Then, we just want to center the camera in world space, so that means simply
-// translate (subtract) it to the center now that its all rotated nicely.
+// We form the camera basis, {facing, right, trueUp}, and then rotate it into the 
+// world space, aligning its normal with the -Z axis. Then, we just want to center 
+// the camera in world space, so that means simply translate (subtract)
+// it to the center now that its all rotated nicely.
 Matrix4 Matrix4::lookAt(const Vec3& eye, const Vec3& target, const Vec3& up)
 {
 	// 1) build camera axes
@@ -155,7 +156,7 @@ Matrix4 Matrix4::lookAt(const Vec3& eye, const Vec3& target, const Vec3& up)
 	// 2) start with identity
 	Matrix4 M = Matrix4::identity();
 
-	// 3) fill the rotation (upper-left 3×3)
+	// 3) fill the rotation (upper-left 3x3)
 	//    [ r.x  u.x  -f.x ]
 	//    [ r.y  u.y  -f.y ]
 	//    [ r.z  u.z  -f.z ]
@@ -196,6 +197,7 @@ Matrix4 Matrix4::orthographic(float left, float right,
 	return O;
 }
 /// Perspective
+// Transforms each world space coordinate to the near clipping plane
 Matrix4 Matrix4::perspective(float fovY, float aspect,
 	float near, float far)
 {

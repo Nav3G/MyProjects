@@ -37,6 +37,15 @@ void Framebuffer::saveToPPM(const std::string& filename) const
 	std::cout << "Wrote output.ppm\n";
 }
 
+// Screen space transform
+Vec3 Framebuffer::toScreen(const Vec4& ndc)
+{
+	float x = (ndc.x() * 0.5f + 0.5f) * width;
+	float y = (1.0f - (ndc.y() * 0.5f + 0.5f)) * height;
+	float z = ndc.z();
+	return Vec3(x, y, z);
+}
+
 // Utility methods
 int Framebuffer::getHeight() {
 	return height;
