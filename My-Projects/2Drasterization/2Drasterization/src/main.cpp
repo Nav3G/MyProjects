@@ -4,6 +4,7 @@
 #include "Vec3.h"
 #include "Vec4.h"
 #include "Matrix4.h"
+#include "Camera.h"
 
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
@@ -87,47 +88,21 @@ GLuint compileShaderProgram() {
     return shaderProgram;
 }
 #pragma endregion   
-// Camera movement (view matrix element update)
-static Matrix4 gViewMatrix = Matrix4::identity();
 
+// Camera vars
 static float cameraYaw = -90.0f;   // degrees, around Y
 static float cameraPitch = 20.0f;   // degrees, up/down
-static float cameraDist = 15.0f;   // radius from target
-static const Vec3 cameraTarget(0.0f, 0.0f, 0.0f);
+static const Vec3 cameraPos(1.f, 1.f, -15.f);
 
-// helper to convert degrees -> radians
-inline float deg2rad(float d) { return d * 3.14159265f / 180.0f; }
+static float moveSpeed = 30.f;
+static float sense = 0.1f;
+static float zoom = 30.f;
 
-// call this each frame before computing V
-void updateCameraFromInput(GLFWwindow* window, float deltaTime) {
-    float speedAng = 60.0f;   // deg/sec
-    float speedZoom = 2.0f;  // units/sec
+// Mouse vars
+static bool   firstMouse = true;
+static double lastX = 0.0, lastY = 0.0;
 
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cameraYaw -= speedAng * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraYaw += speedAng * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraPitch += speedAng * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cameraPitch -= speedAng * deltaTime;
-
-    if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) cameraDist -= speedZoom * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) cameraDist += speedZoom * deltaTime;
-
-    // clamp
-    if (cameraPitch > 89.0f) cameraPitch = 89.0f;
-    if (cameraPitch < -89.0f) cameraPitch = -89.0f;
-    if (cameraDist < 1.0f) cameraDist = 1.0f;
-
-    // compute Cartesian camera position from spherical coords
-    float yawRad = deg2rad(cameraYaw);
-    float pitchRad = deg2rad(cameraPitch);
-
-    Vec3 camPos;
-    camPos.x_ = cameraTarget.x_ + cameraDist * std::cos(pitchRad) * std::cos(yawRad);
-    camPos.y_ = cameraTarget.y_ + cameraDist * std::sin(pitchRad);
-    camPos.z_ = cameraTarget.z_ + cameraDist * std::cos(pitchRad) * std::sin(yawRad);
-
-    // update view matrix
-    gViewMatrix = Matrix4::lookAt(camPos, cameraTarget, Vec3(0, 1, 0));
-}
+float deg2rad(float d) { return d * 3.14159265f / 180.0f; }
 
 int main()
 {
@@ -198,6 +173,11 @@ int main()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fbWidth, fbHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 #pragma endregion
 
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    // Create a camera
+    Camera cam(cameraPos, { 0, 1, 0 }, cameraYaw, cameraPitch, moveSpeed, sense, zoom);
+
     // Create software framebuffer.
     Framebuffer fb(fbWidth, fbHeight);
 
@@ -224,26 +204,62 @@ int main()
         float dt = now - lastTime;
         lastTime = now;
 
-        // Camera update. Sets the -z axis to the camera normal
         glfwPollEvents();
-        updateCameraFromInput(window, dt);
+
+        // Close window on escape
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        }
+        
+        // KB movement
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            cam.processKeyboard(MoveDir::Forward, dt);
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            cam.processKeyboard(MoveDir::Backward, dt);
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            cam.processKeyboard(MoveDir::Left, dt);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            cam.processKeyboard(MoveDir::Right, dt);
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+            cam.processKeyboard(MoveDir::Up, dt);
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+            cam.processKeyboard(MoveDir::Down, dt);
+
+        // Mouse movement
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+
+        if (firstMouse)
+        {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
+
+        double dx = xpos - lastX;
+        double dy = lastY - ypos;
+
+        cam.processMouseMovement(dx, dy, true);
+
+        lastX = xpos;
+        lastY = ypos;
 
         // MVP
-        float fovY = 1.0472f;
         float aspect = float(fb.getWidth()) / float(fb.getHeight());
-        float near = 0.1f;
+        float near = 0.01f;
         float far = 100.0f;
 
-        Matrix4 P = Matrix4::perspective(fovY, aspect, near, far);
-        Matrix4 V = gViewMatrix;
+        Matrix4 V = cam.getViewMatrix();
+        Matrix4 P = Matrix4::perspective(deg2rad(cam.getZoom()), aspect, near, far);
         Matrix4 M = Matrix4::identity();
 
-        Matrix4 MVP = P * gViewMatrix * M;
+        Matrix4 MVP = P * V * M;
 
         // Screen scene
         std::vector<Triangle> screenScene;
         screenScene.reserve(worldScene.size());
         
+        // Full sprite transform 
         for (const auto& wtri : worldScene)
         {
             // Triangle transform
@@ -258,6 +274,8 @@ int main()
             Vec4 c1 = MVP * h1;
             Vec4 c2 = MVP * h2;
 
+            // if (c0[3] <= 0 && c1[3] <= 0 && c2[3] <= 0) continue;
+
             // 3) Perspective divide to map each point to NDC on the [-1, 1]^3 cube
             // clip space --> NDC
             Vec4 n0 = c0.perspectiveDivide();
@@ -268,7 +286,7 @@ int main()
             //std::cout << "n1 = (" << n1.x() << "," << n1.y() << "," << n1.z() << ")\n";
             //std::cout << "n2 = (" << n2.x() << "," << n2.y() << "," << n2.z() << ")\n";
 
-            // NDC --> screen space [0, w] x [0, h]
+            // NDC --> screen space [0, w] x [0, h] for the framebuffer
             Vec3 s0 = fb.toScreen(n0);
             Vec3 s1 = fb.toScreen(n1);
             Vec3 s2 = fb.toScreen(n2);
@@ -277,7 +295,7 @@ int main()
             //std::cout << "s1 = (" << s1.x_ << "," << s1.y_ << "," << s1.z_ << ")\n";
             //std::cout << "s2 = (" << s2.x_ << "," << s2.y_ << "," << s2.z_ << ")\n";
 
-            // Fill the screen space sceen array with the transformed triangle
+            // Fill the screen space array with the transformed triangle
             screenScene.emplace_back(
                 Vec3(s0.x_, s0.y_, s0.z_),
                 Vec3(s1.x_, s1.y_, s1.z_),
@@ -334,7 +352,6 @@ int main()
 
         // Swap buffers and poll for events.
         glfwSwapBuffers(window);
-        glfwPollEvents();
     }
 #pragma endregion
 

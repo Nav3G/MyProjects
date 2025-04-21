@@ -7,8 +7,16 @@
       "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Matrix4.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\Matrix4.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Vec3.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\Vec3.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Camera.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\Camera.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Camera.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\includes\\Camera.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -28,7 +36,7 @@
               "RelativeDocumentMoniker": "2Drasterization\\src\\main.cpp",
               "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\main.cpp",
               "RelativeToolTip": "2Drasterization\\src\\main.cpp",
-              "ViewState": "AgIAAHAAAAAAAAAAAAAAAIUAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAALwAAAAAAAAAAADgvxQBAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-04-15T22:04:20.942Z",
               "IsPinned": true,
@@ -41,14 +49,40 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Matrix4.cpp",
-              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Matrix4.cpp",
-              "RelativeDocumentMoniker": "2Drasterization\\src\\Matrix4.cpp",
-              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Matrix4.cpp",
-              "RelativeToolTip": "2Drasterization\\src\\Matrix4.cpp",
-              "ViewState": "AgIAAI4AAAAAAAAAAADgv5IAAABHAAAAAAAAAA==",
+              "Title": "Vec3.cpp",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Vec3.cpp",
+              "RelativeDocumentMoniker": "2Drasterization\\src\\Vec3.cpp",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Vec3.cpp",
+              "RelativeToolTip": "2Drasterization\\src\\Vec3.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-04-19T06:49:41.117Z",
+              "WhenOpened": "2025-04-21T05:55:54.003Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Camera.h",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Camera.h",
+              "RelativeDocumentMoniker": "2Drasterization\\includes\\Camera.h",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Camera.h",
+              "RelativeToolTip": "2Drasterization\\includes\\Camera.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-21T03:37:20.982Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Camera.cpp",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Camera.cpp",
+              "RelativeDocumentMoniker": "2Drasterization\\src\\Camera.cpp",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Camera.cpp",
+              "RelativeToolTip": "2Drasterization\\src\\Camera.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-21T03:44:27.599Z",
               "EditorCaption": ""
             }
           ]

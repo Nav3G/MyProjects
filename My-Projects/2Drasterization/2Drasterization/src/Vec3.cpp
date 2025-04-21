@@ -26,6 +26,25 @@ Vec3 Vec3::operator/(float scalar) const
 	return Vec3(x_ / scalar, y_ / scalar, z_ / scalar);
 }
 
+// Element-style access
+float Vec3::operator[](int idx) const	// read
+{
+	if (idx < 0 || idx > 2)
+	{
+		throw std::out_of_range("Vec4 index out of range (0-2)");
+	}
+	return *(&x_ + idx);
+}
+float& Vec3::operator[](int idx)		// write
+{
+	if (idx < 0 || idx > 2)
+	{
+		throw std::out_of_range("Vec4 index out of range (0-3)");
+	}
+
+	return *(&x_ + idx);
+}
+
 // Utility functions
 float Vec3::dot(const Vec3& other) const
 {

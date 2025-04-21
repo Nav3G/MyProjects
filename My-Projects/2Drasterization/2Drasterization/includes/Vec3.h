@@ -19,6 +19,9 @@ public:
     Vec3 operator*(float scalar) const;
     Vec3 operator/(float scalar) const;
 
+    float operator[](int idx) const;
+    float& operator[](int idx);
+
     // Utility methods: dot product, cross product, magnitude, normalization
     float dot(const Vec3& other) const;
     Vec3 cross(const Vec3& other) const;
