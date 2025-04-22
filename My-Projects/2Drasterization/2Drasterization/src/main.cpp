@@ -5,6 +5,7 @@
 #include "Vec4.h"
 #include "Matrix4.h"
 #include "Camera.h"
+#include "Grid.h"
 
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
@@ -87,20 +88,27 @@ GLuint compileShaderProgram() {
 
     return shaderProgram;
 }
-#pragma endregion   
+#pragma endregion  
+// Viewing frustum
+static float near = 0.01f;  // near clipping plane distance
+static float far = 100.f;   // far clipping plane
 
 // Camera vars
 static float cameraYaw = -90.0f;   // degrees, around Y
-static float cameraPitch = 20.0f;   // degrees, up/down
-static const Vec3 cameraPos(1.f, 1.f, -15.f);
+static float cameraPitch = 0.f;    // degrees, up/down
+static const Vec3 cameraPos(0.f, -10.f, 30.f);
 
 static float moveSpeed = 30.f;
-static float sense = 0.1f;
-static float zoom = 30.f;
+static float sense = 0.05f;
+static float zoom = 40.f;
 
 // Mouse vars
 static bool   firstMouse = true;
 static double lastX = 0.0, lastY = 0.0;
+
+// Grid bounds
+int gridMaxX = 30, gridMinX = -30;
+int gridMaxZ = 30, gridMinZ = -30;
 
 float deg2rad(float d) { return d * 3.14159265f / 180.0f; }
 
@@ -184,15 +192,18 @@ int main()
     // Prepare a scene with several triangles.
     std::vector<Triangle> worldScene;
     worldScene.emplace_back(
-        Vec3(2.0f, -1.0f, -4.0f),
-        Vec3(1.0f, -1.0f, -1.0f),
-        Vec3(0.0f, 1.0f, -3.0f),
+        Vec3(12.0f, -10.f, 6.0f),
+        Vec3(11.0f, -10.f, 9.0f),
+        Vec3(10.0f, -11.0f, 7.0f),
         Color(155, 0, 255), Color(0, 255, 0), Color(0, 0, 255));
     worldScene.emplace_back(
-        Vec3(-4.0f, -3.0f, -4.0f),
-        Vec3(1.0f, -1.0f, -1.0f),
-        Vec3(0.0f, 1.0f, -3.0f),
+        Vec3(6.0f, -7.0f, -4.0f),
+        Vec3(11.0f, -10.0f, -1.0f),
+        Vec3(10.0f, -11.0f, -3.0f),
         Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255));
+
+    // Create grid
+    static Grid grid(gridMinX, gridMaxX, gridMinZ, gridMaxZ, /*spacing=*/1.0f);
 
     float lastTime = glfwGetTime();
 
@@ -224,6 +235,7 @@ int main()
             cam.processKeyboard(MoveDir::Up, dt);
         if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
             cam.processKeyboard(MoveDir::Down, dt);
+        //*
 
         // Mouse movement
         double xpos, ypos;
@@ -243,23 +255,23 @@ int main()
 
         lastX = xpos;
         lastY = ypos;
+        //* 
 
         // MVP
         float aspect = float(fb.getWidth()) / float(fb.getHeight());
-        float near = 0.01f;
-        float far = 100.0f;
 
         Matrix4 V = cam.getViewMatrix();
         Matrix4 P = Matrix4::perspective(deg2rad(cam.getZoom()), aspect, near, far);
         Matrix4 M = Matrix4::identity();
 
         Matrix4 MVP = P * V * M;
-
+        // *
+        
         // Screen scene
         std::vector<Triangle> screenScene;
         screenScene.reserve(worldScene.size());
         
-        // Full sprite transform 
+        // Full sprite transform
         for (const auto& wtri : worldScene)
         {
             // Triangle transform
@@ -268,32 +280,27 @@ int main()
             Vec4 h1(wtri.v1.x_, wtri.v1.y_, wtri.v1.z_, 1);
             Vec4 h2(wtri.v2.x_, wtri.v2.y_, wtri.v2.z_, 1);
 
-            // 2) MVP transform: perspective --> camera view --> scale
+            // 2) MVP transform: scale -> camera view -> perspective tansform
             // homogenous  --> clip space
             Vec4 c0 = MVP * h0;
             Vec4 c1 = MVP * h1;
             Vec4 c2 = MVP * h2;
 
-            // if (c0[3] <= 0 && c1[3] <= 0 && c2[3] <= 0) continue;
+            // culling
+            if (c0[3] <= 0 || c1[3] <= 0 || c2[3] <= 0) continue;
 
-            // 3) Perspective divide to map each point to NDC on the [-1, 1]^3 cube
+            // 3) Perspective divide to map each point to NDC on the [-1, 1]^3 cube.
+            // Basically we divide by the w comp in clip space, which has taken on the
+            // value -P_cam,z.
             // clip space --> NDC
             Vec4 n0 = c0.perspectiveDivide();
             Vec4 n1 = c1.perspectiveDivide();
             Vec4 n2 = c2.perspectiveDivide();
 
-            //std::cout << "n0 = (" << n0.x() << "," << n0.y() << "," << n0.z() << ")\n";
-            //std::cout << "n1 = (" << n1.x() << "," << n1.y() << "," << n1.z() << ")\n";
-            //std::cout << "n2 = (" << n2.x() << "," << n2.y() << "," << n2.z() << ")\n";
-
             // NDC --> screen space [0, w] x [0, h] for the framebuffer
             Vec3 s0 = fb.toScreen(n0);
             Vec3 s1 = fb.toScreen(n1);
             Vec3 s2 = fb.toScreen(n2);
-
-            //std::cout << "s0 = (" << s0.x_ << "," << s0.y_ << "," << s0.z_ << ")\n";
-            //std::cout << "s1 = (" << s1.x_ << "," << s1.y_ << "," << s1.z_ << ")\n";
-            //std::cout << "s2 = (" << s2.x_ << "," << s2.y_ << "," << s2.z_ << ")\n";
 
             // Fill the screen space array with the transformed triangle
             screenScene.emplace_back(
@@ -307,8 +314,11 @@ int main()
         }
 
         // Clear software framebuffer.
-        fb.clearColor(Color(30, 30, 30));
+        fb.clearColor(Color(150, 150, 150));
         fb.clearDepth(std::numeric_limits<float>::max());
+
+        // Draw grid
+        grid.draw(cam, fb, near);
 
         // Rasterize each triangle onto the framebuffer.
         for (const Triangle& tri : screenScene)
@@ -321,7 +331,7 @@ int main()
             {
                 for (int x = bbox.minX; x <= bbox.maxX; x++)
                 {
-                    // Compute the center of the pixel.
+                    // Get the center of the pixel.
                     Vec3 p(x + 0.5f, y + 0.5f, 0);
                     if (tri.contains(p))
                     {

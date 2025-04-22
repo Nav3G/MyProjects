@@ -7,7 +7,7 @@ enum class MoveDir { Forward, Backward, Left, Right, Up, Down };
 class Camera
 {
 private:
-	// Position & orientation
+	// Position & orientation (basis)
 	Vec3 position_; // Camera location in world space
 	Vec3 front_;    // Camera normal
 	Vec3 up_, right_, worldUp_; // Up, right to form camera basis
@@ -40,6 +40,7 @@ public:
 	Matrix4 getViewMatrix() const;
 
 	// Helpers
-	float getZoom();
+	float getZoom() const;
+	Vec3 getFront();
 };
 

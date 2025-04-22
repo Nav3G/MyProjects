@@ -11,6 +11,10 @@ public:
     Vec2(); // Default
     Vec2(float xVal, float yVal);
 
+    // Accessors
+    float operator[](int idx) const;
+    float& operator[](int idx);
+
     // Operator overloads
     Vec2 operator+(const Vec2& other) const;
     Vec2 operator-(const Vec2& other) const;

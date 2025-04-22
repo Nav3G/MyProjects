@@ -34,6 +34,6 @@ public:
 	/// Camera
 	static Matrix4 perspective(float fovY, float aspect, float near, float far);
 	static Matrix4 orthographic(float left, float right, float bottom, float top, float near, float far);
-	static Matrix4 lookAt(const Vec3& eye, const Vec3& target, const Vec3& up);
+	static Matrix4 lookAt(const Vec3& eye, const Vec3& target, const Vec3& worldUp);
 };
 

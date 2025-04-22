@@ -140,39 +140,6 @@ Matrix4 Matrix4::rotationZ(float radians)
 	return R;
 }
 
-// Camera
-/// LookAt
-// We form the camera basis, {facing, right, trueUp}, and then rotate it into the 
-// world space, aligning its normal with the -Z axis. Then, we just want to center 
-// the camera in world space, so that means simply translate (subtract)
-// it to the center now that its all rotated nicely.
-Matrix4 Matrix4::lookAt(const Vec3& eye, const Vec3& target, const Vec3& up)
-{
-	// 1) build camera axes
-	Vec3 f = (target - eye).normalize();      // forward
-	Vec3 r = f.cross(up).normalize();         // right
-	Vec3 u = r.cross(f);                      // true up
-
-	// 2) start with identity
-	Matrix4 M = Matrix4::identity();
-
-	// 3) fill the rotation (upper-left 3x3)
-	//    [ r.x  u.x  -f.x ]
-	//    [ r.y  u.y  -f.y ]
-	//    [ r.z  u.z  -f.z ]
-	M(0, 0) = r.x_;  M(0, 1) = u.x_;  M(0, 2) = -f.x_;
-	M(1, 0) = r.y_;  M(1, 1) = u.y_;  M(1, 2) = -f.y_;
-	M(2, 0) = r.z_;  M(2, 1) = u.z_;  M(2, 2) = -f.z_;
-
-	// 4) fill the translation (last column)
-	M(0, 3) = -r.dot(eye);
-	M(1, 3) = -u.dot(eye);
-	M(2, 3) = f.dot(eye);
-	// bottom-right stays 1
-	M(3, 3) = 1.0f;
-
-	return M; 
-}
 /// Orthographic
 Matrix4 Matrix4::orthographic(float left, float right,
 	float bottom, float top,
@@ -208,15 +175,15 @@ Matrix4 Matrix4::perspective(float fovY, float aspect,
 	float f = 1.0f / std::tan(fovY * 0.5f);
 
 	// X and Y scale
-	P.m_[0 * 4 + 0] = f / aspect;         // row0, col0
-	P.m_[1 * 4 + 1] = f;                  // row1, col1
+	P(0, 0) = f / aspect;         
+	P(1, 1) = f;         
 
 	// Z remap: [near,far] -> [-1,1]
-	P.m_[2 * 4 + 2] = -(far + near) / (far - near);        // row2, col2
-	P.m_[2 * 4 + 3] = -2.0f * far * near / (far - near);   // row2, col3
+	P(2, 2) = -(far + near) / (far - near);        
+	P(2, 3) = -2.0f * far * near / (far - near);   
 
 	// W component to perform perspective divide
-	P.m_[3 * 4 + 2] = -1.0f;              // row3, col2
+	P(3, 2) = -1.0f;              
 
 	return P;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Color.h"
+#include <Vec2.h>
 #include <Vec3.h>
 #include <Vec4.h>
 #include <vector>
@@ -38,5 +39,8 @@ public:
     std::vector<float>& getDepthBuffer();
     void setColorBuffer(Color color, int y, int x);
     void setDepthBuffer(float depth, int y, int x);
+
+    // Grid drawing (temp)
+    void drawLine(const Vec2& p0, const Vec2& p1, Color c);
 };
 

@@ -22,21 +22,6 @@ void Framebuffer::setPixel(int x, int y, Color color, float depth)
 	depthBuffer[y * width + x] = depth;
 }
 
-// Export to PPM
-void Framebuffer::saveToPPM(const std::string& filename) const
-{
-	std::ofstream ofs("rendered.ppm", std::ios::binary);
-	ofs << "P6\n" << width << " " << height << "\n255\n";
-	for (size_t i = 0; i < width * height; ++i) {
-		// PPM requires raw RGB bytes
-		ofs.put(colorBuffer[i].r);
-		ofs.put(colorBuffer[i].g);
-		ofs.put(colorBuffer[i].b);
-	}
-	ofs.close();
-	std::cout << "Wrote output.ppm\n";
-}
-
 // Screen space transform
 Vec3 Framebuffer::toScreen(const Vec4& ndc)
 {
@@ -68,4 +53,39 @@ void Framebuffer::setColorBuffer(Color color, int y, int x)
 void Framebuffer::setDepthBuffer(float depth, int y, int x)
 {
 	depthBuffer[y * width + x] = depth;
+}
+
+// Grid drawing
+void Framebuffer::drawLine(const Vec2& p0, const Vec2& p1, Color c)
+{
+	int x0 = int(p0.x), y0 = int(p0.y);
+	int x1 = int(p1.x), y1 = int(p1.y);
+	int x = x0, y = y0;
+	int dx = abs(x1 - x0), dy = abs(y1 - y0);
+	int sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+	int err = dx - dy;
+	while (true) {
+		if (x >= 0 && x < width && y >= 0 && y < height) {
+			setPixel(x, y, c, /*depth=*/0);
+		}
+		if (x == x1 && y == y1) break;
+		int e2 = err * 2;
+		if (e2 > -dy) { err -= dy; x += sx; }
+		if (e2 < dx) { err += dx; y += sy; }
+	}
+}
+
+// Export to PPM
+void Framebuffer::saveToPPM(const std::string& filename) const
+{
+	std::ofstream ofs("rendered.ppm", std::ios::binary);
+	ofs << "P6\n" << width << " " << height << "\n255\n";
+	for (size_t i = 0; i < width * height; ++i) {
+		// PPM requires raw RGB bytes
+		ofs.put(colorBuffer[i].r);
+		ofs.put(colorBuffer[i].g);
+		ofs.put(colorBuffer[i].b);
+	}
+	ofs.close();
+	std::cout << "Wrote output.ppm\n";
 }

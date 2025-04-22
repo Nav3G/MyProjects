@@ -7,6 +7,24 @@
 Vec2::Vec2() : x(0), y(0) {}
 Vec2::Vec2(float xVal, float yVal) : x(xVal), y(yVal) {}
 
+// Accessors
+float Vec2::operator[](int idx) const
+{
+    if (idx < 0 || idx > 1)
+    {
+        throw std::out_of_range("Vec4 index out of range (0-1)");
+    }
+    return *(&x + idx);
+}
+float& Vec2::operator[](int idx)
+{
+    if (idx < 0 || idx > 1)
+    {
+        throw std::out_of_range("Vec4 index out of range (0-1)");
+    }
+    return *(&x + idx);
+}
+
 // Operator overloads
 Vec2 Vec2::operator+(const Vec2& other) const
 {
