@@ -84,10 +84,23 @@ float Vec4::dot(const Vec4& other) const
 	return x_ * other.x_ + y_ * other.y_ + z_ * other.z_ + w_ * other.w_;
 }
 
+// Cross product
+Vec3 Vec4::cross(const Vec4& other) const
+{
+	return Vec3(y_ * other.z_ - z_ * other.y_, z_ * other.x_ - x_ * other.z_,
+		x_ * other.y_ - y_ * other.x_);
+}
+
 // Multiply by a 4×4 matrix(to be defined once you have Matrix4)
 // Vec4 operator*(const Matrix4& m) const;
 
 Vec4 Vec4::perspectiveDivide() const
 {
 	return Vec4(x_ / w_, y_ / w_, z_ / w_, 1.0f);
+}
+
+// Helper
+Vec3 Vec4::toVec3() const
+{
+	return Vec3(x_, y_, z_);
 }

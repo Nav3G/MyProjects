@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <Vec3.h>
 
 class Vec4 {
 private:
@@ -36,11 +37,17 @@ public:
     // Dot product (4D)
     float dot(const Vec4& other) const;
 
+    // Cross product (3D)
+    Vec3 cross(const Vec4& other) const;
+
     // Multiply by a 4×4 matrix (to be defined once you have Matrix4)
     // Vec4 operator*(const Matrix4& m) const;
 
     // Convenience: convert to 3D by performing the perspective divide
     // (i.e. x/=w; y/=w; z/=w; w=1)
     Vec4 perspectiveDivide() const;
+
+    // Helpers
+    Vec3 toVec3() const;
 };
 

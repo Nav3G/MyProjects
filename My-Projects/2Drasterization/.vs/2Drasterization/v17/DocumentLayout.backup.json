@@ -7,8 +7,16 @@
       "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Camera.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\Camera.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Triangle.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\Triangle.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Triangle.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\includes\\Triangle.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\GeometryUtils.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\GeometryUtils.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -28,7 +36,7 @@
               "RelativeDocumentMoniker": "2Drasterization\\src\\main.cpp",
               "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\main.cpp",
               "RelativeToolTip": "2Drasterization\\src\\main.cpp",
-              "ViewState": "AgIAAG0AAAAAAAAAAAAAAM4AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAYwOMAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-04-15T22:04:20.942Z",
               "IsPinned": true,
@@ -41,14 +49,40 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Camera.cpp",
-              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Camera.cpp",
-              "RelativeDocumentMoniker": "2Drasterization\\src\\Camera.cpp",
-              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Camera.cpp*",
-              "RelativeToolTip": "2Drasterization\\src\\Camera.cpp*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAqAAAAAAAAAA==",
+              "Title": "Triangle.cpp",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Triangle.cpp",
+              "RelativeDocumentMoniker": "2Drasterization\\src\\Triangle.cpp",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Triangle.cpp",
+              "RelativeToolTip": "2Drasterization\\src\\Triangle.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-04-22T06:01:29.243Z",
+              "WhenOpened": "2025-04-24T06:56:04.696Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Triangle.h",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Triangle.h",
+              "RelativeDocumentMoniker": "2Drasterization\\includes\\Triangle.h",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Triangle.h",
+              "RelativeToolTip": "2Drasterization\\includes\\Triangle.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-24T07:03:53.228Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "GeometryUtils.cpp",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\GeometryUtils.cpp",
+              "RelativeDocumentMoniker": "2Drasterization\\src\\GeometryUtils.cpp",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\GeometryUtils.cpp",
+              "RelativeToolTip": "2Drasterization\\src\\GeometryUtils.cpp",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAAEwAAABcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-24T06:46:31.41Z",
               "EditorCaption": ""
             }
           ]

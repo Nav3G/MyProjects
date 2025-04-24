@@ -6,6 +6,7 @@
 #include "Matrix4.h"
 #include "Camera.h"
 #include "Grid.h"
+#include "GeometryUtils.h"
 
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
@@ -15,6 +16,8 @@
 #include <fstream>
 #include <algorithm>
 #include <limits>
+
+using namespace GeometryUtils;
 
 #pragma region vertex & fragment shaders
 
@@ -90,7 +93,7 @@ GLuint compileShaderProgram() {
 }
 #pragma endregion  
 // Viewing frustum
-static float near = 0.01f;  // near clipping plane distance
+static float near = 1.0f;  // near clipping plane distance
 static float far = 100.f;   // far clipping plane
 
 // Camera vars
@@ -126,7 +129,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create a window.
-    GLFWwindow* window = glfwCreateWindow(1000, 1000, "My Renderer", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1200, 1000, "My Renderer", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
@@ -176,7 +179,7 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    int fbWidth = 1000, fbHeight = 1000;
+    int fbWidth = 1200, fbHeight = 1000;
     // Allocate empty texture storage.
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fbWidth, fbHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 #pragma endregion
@@ -202,15 +205,32 @@ int main()
         Vec3(10.0f, -11.0f, -3.0f),
         Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255));
 
+    // Polygon test
+    Vec4Poly fanTest = { {0.0f, 0.0f, 0.0f, 1.0f}, {5.0f, 0.0f, 0.0f, 1.0f},
+        {5.0f, -5.0f, 0.0f, 1.0f}, {0.0f, -5.0f, 0.0f, 1.0f} };
+
+    std::vector<Tri4> testpoly = triangulateFan(fanTest);
+    for (Tri4 tri : testpoly)
+    {
+        worldScene.emplace_back(
+            tri[0].toVec3(), tri[1].toVec3(), tri[2].toVec3(),
+            Color(155, 0, 255),
+            Color(155, 0, 255),
+            Color(155, 0, 255)
+        );
+    }
+    //*
+
     // Create grid
     static Grid grid(gridMinX, gridMaxX, gridMinZ, gridMaxZ, /*spacing=*/1.0f);
 
+    // Time information
     float lastTime = glfwGetTime();
 
     // Main loop.
     while (!glfwWindowShouldClose(window))
     {
-        // Process input/events here.
+        // Process input/events here
         float now = glfwGetTime();
         float dt = now - lastTime;
         lastTime = now;
@@ -257,21 +277,20 @@ int main()
         lastY = ypos;
         //* 
 
-        // MVP
+        // PMV matrix
         float aspect = float(fb.getWidth()) / float(fb.getHeight());
 
         Matrix4 V = cam.getViewMatrix();
         Matrix4 P = Matrix4::perspective(deg2rad(cam.getZoom()), aspect, near, far);
         Matrix4 M = Matrix4::identity();
-
-        Matrix4 MVP = P * V * M;
-        // *
+        //*
         
         // Screen scene
         std::vector<Triangle> screenScene;
         screenScene.reserve(worldScene.size());
-        
-        // Full sprite transform
+        screenScene.clear();
+
+        // Full entity transform
         for (const auto& wtri : worldScene)
         {
             // Triangle transform
@@ -280,37 +299,62 @@ int main()
             Vec4 h1(wtri.v1.x_, wtri.v1.y_, wtri.v1.z_, 1);
             Vec4 h2(wtri.v2.x_, wtri.v2.y_, wtri.v2.z_, 1);
 
-            // 2) MVP transform: scale -> camera view -> perspective tansform
-            // homogenous  --> clip space
-            Vec4 c0 = MVP * h0;
-            Vec4 c1 = MVP * h1;
-            Vec4 c2 = MVP * h2;
+            // 2) VM transform: scale * camera space transform
+            // homogenous --> camera space
+            Vec4 cam0 = V * M * h0;
+            Vec4 cam1 = V * M * h1;
+            Vec4 cam2 = V * M * h2;
 
-            // culling
-            if (c0[3] <= 0 || c1[3] <= 0 || c2[3] <= 0) continue;
+            // 3) Back-face culling
+            // Compute triangle normal in camera space
+             Vec3 normal = (cam1 - cam0).cross(cam2 - cam0);
+             if (normal.z_ <= 0) continue; // skip
 
-            // 3) Perspective divide to map each point to NDC on the [-1, 1]^3 cube.
+            // 4) Perspective transform
+            // cam space --> clip space
+            Vec4 c0 = P * cam0;
+            Vec4 c1 = P * cam1;
+            Vec4 c2 = P * cam2;
+
+            // 4.1) Perspective-correct interpolation, storing ws
+            float clipW[3] = { c0.w(), c1.w(), c2.w() };
+
+            // 5) Perspective divide to map each point to NDC on the [-1, 1]^3 cube.
             // Basically we divide by the w comp in clip space, which has taken on the
             // value -P_cam,z.
             // clip space --> NDC
             Vec4 n0 = c0.perspectiveDivide();
             Vec4 n1 = c1.perspectiveDivide();
             Vec4 n2 = c2.perspectiveDivide();
+            
+            // 6) Frustum clipping
+            Vec4Poly poly = { n0, n1, n2 };
 
-            // NDC --> screen space [0, w] x [0, h] for the framebuffer
-            Vec3 s0 = fb.toScreen(n0);
-            Vec3 s1 = fb.toScreen(n1);
-            Vec3 s2 = fb.toScreen(n2);
+            poly = clipPolygon(poly, planeLeft);
+            poly = clipPolygon(poly, planeRight);
+            poly = clipPolygon(poly, planeBottom);
+            poly = clipPolygon(poly, planeTop);
+            poly = clipPolygon(poly, planeNear);
+            poly = clipPolygon(poly, planeFar);
 
-            // Fill the screen space array with the transformed triangle
-            screenScene.emplace_back(
-                Vec3(s0.x_, s0.y_, s0.z_),
-                Vec3(s1.x_, s1.y_, s1.z_),
-                Vec3(s2.x_, s2.y_, s2.z_),
-                wtri.color0,
-                wtri.color1,
-                wtri.color2
-            );
+            if (poly.empty())
+                continue;   // no part of this triangle remains in view frustum
+
+            auto fans = triangulateFan(poly);
+
+            for (const Tri4& tri4 : fans)
+            {
+                // 7) NDC --> screen space [0, w] x [0, h] for the framebuffer
+                Vec3 s0 = fb.toScreen(tri4[0]);
+                Vec3 s1 = fb.toScreen(tri4[1]);
+                Vec3 s2 = fb.toScreen(tri4[2]);
+
+                // 8) Fill the screen space array with the transformed triangle
+                Triangle tri(s0, s1, s2, wtri.color0, wtri.color1, wtri.color2);
+                tri.preparePerspective(clipW);
+                screenScene.emplace_back(tri);
+            }
+            //*
         }
 
         // Clear software framebuffer.
@@ -320,28 +364,28 @@ int main()
         // Draw grid
         grid.draw(cam, fb, near);
 
-        // Rasterize each triangle onto the framebuffer.
+        // Rasterize each triangle onto the framebuffer
         for (const Triangle& tri : screenScene)
         {
-            // Initialize and compute the bounding box for the given triangle.
+            // Initialize and compute the bounding box for the given triangle
             Triangle::Boundingbox bbox = tri.getBoundingBox(fb.getWidth(), fb.getHeight());
 
-            // Loop over pixels in the bounding box.
+            // Loop over pixels in the bounding box
             for (int y = bbox.minY; y <= bbox.maxY; y++)
             {
                 for (int x = bbox.minX; x <= bbox.maxX; x++)
                 {
-                    // Get the center of the pixel.
+                    // Get the center of the pixel
                     Vec3 p(x + 0.5f, y + 0.5f, 0);
                     if (tri.contains(p))
                     {
                         Triangle::Barycentrics bary = tri.computeBarycentrics(p);
-                        // Interpolate depth.
+                        // Interpolate depth
                         float interpDepth = tri.interpolateDepth(bary);
                         int index = y * fb.getWidth() + x;
-                        // Depth test.
+                        // Depth test
                         if (interpDepth < fb.getDepthBuffer()[index]) {
-                            Color interpColor = tri.interpolateColor(bary);
+                            Color interpColor = tri.interpolateColorPC(bary);
                             fb.setPixel(x, y, interpColor, interpDepth);
                         }
                     }
@@ -349,7 +393,7 @@ int main()
             }
         }
 
-#pragma region update/render to window
+    #pragma region update/render to window
         // Update the OpenGL texture with the framebuffer's color buffer.
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, fbWidth, fbHeight, GL_RGB, GL_UNSIGNED_BYTE, fb.getColorBuffer().data());
@@ -362,8 +406,8 @@ int main()
 
         // Swap buffers and poll for events.
         glfwSwapBuffers(window);
-    }
 #pragma endregion
+    }
 
     // Cleanup resources.
     glDeleteVertexArrays(1, &quadVAO);

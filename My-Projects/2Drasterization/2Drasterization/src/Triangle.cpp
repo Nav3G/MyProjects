@@ -11,6 +11,13 @@ Triangle::Triangle(const Vec3& a, const Vec3& b, const Vec3& c,
     color0 = col0;
     color1 = col1;
     color2 = col2;
+
+    for (int i = 0; i < 3; ++i) {
+        invW[i] = 1.0f;                     // “1/w == 1” is a no-op fallback
+        rOverW[i] = colorAt(i).r;            // fallback to plain color.r
+        gOverW[i] = colorAt(i).g;
+        bOverW[i] = colorAt(i).b;
+    }
 }
 
 Triangle::Triangle(const Vec3& a, const Vec3& b, const Vec3& c)
@@ -18,6 +25,13 @@ Triangle::Triangle(const Vec3& a, const Vec3& b, const Vec3& c)
     v0 = a;
     v1 = b;
     v2 = c;
+
+    for (int i = 0; i < 3; ++i) {
+        invW[i] = 1.0f;                     // “1/w == 1” is a no-op fallback
+        rOverW[i] = colorAt(i).r;            // fallback to plain color.r
+        gOverW[i] = colorAt(i).g;
+        bOverW[i] = colorAt(i).b;
+    }
 }
 
 // Utility functions
@@ -82,4 +96,42 @@ Triangle::Boundingbox Triangle::getBoundingBox(int fbWidth, int fbHeight) const
     bbox.minY = std::max(0, static_cast<int>(std::floor(std::min({ v0.y_, v1.y_, v2.y_ }))));
     bbox.maxY = std::min(fbHeight - 1, static_cast<int>(std::ceil(std::max({ v0.y_, v1.y_, v2.y_ }))));
     return bbox;
+}
+
+// Perspective correct interp
+void Triangle::preparePerspective(const float clipW[3])
+{
+    for (int i = 0; i < 3; ++i) {
+        invW[i] = 1.0f / clipW[i];
+        rOverW[i] = colorAt(i).r * invW[i];
+        gOverW[i] = colorAt(i).g * invW[i];
+        bOverW[i] = colorAt(i).b * invW[i];
+    }
+}
+Color Triangle::interpolateColorPC(const Barycentrics& bary) const
+{
+    float oneOverW = bary.alpha * invW[0]
+        + bary.beta * invW[1]
+        + bary.gamma * invW[2];
+
+    float r = (bary.alpha * rOverW[0]
+        + bary.beta * rOverW[1]
+        + bary.gamma * rOverW[2]) / oneOverW;
+    float g = (bary.alpha * gOverW[0]
+        + bary.beta * gOverW[1]
+        + bary.gamma * gOverW[2]) / oneOverW;
+    float b = (bary.alpha * bOverW[0]
+        + bary.beta * bOverW[1]
+        + bary.gamma * bOverW[2]) / oneOverW;
+
+    return Color(r, g, b);
+}
+
+// Helpers
+Color& Triangle::colorAt(int i) {
+    return (i == 0 ? color0 : (i == 1 ? color1 : color2));
+}
+const Color& Triangle::colorAt(int i) const
+{
+    return (i == 0 ? color0 : (i == 1 ? color1 : color2));
 }
