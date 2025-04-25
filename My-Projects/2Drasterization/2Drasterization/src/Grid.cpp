@@ -53,6 +53,6 @@ void Grid::draw(const Camera& cam, Framebuffer& fb, float nearPlane) const
 			continue;
 
 		// 5) Draw the line (add to framebuffer)
-		fb.drawLine(Vec2(s0[0], s0[1]), Vec2(s1[0], s1[1]), { 0, 0, 0 });
+		fb.drawLine(Vec2(s0[0], s0[1]), Vec2(s1[0], s1[1]), s0.z_, s1.z_, { 0, 0, 0 });
 	}
 }

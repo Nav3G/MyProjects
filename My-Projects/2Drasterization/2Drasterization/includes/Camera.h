@@ -39,6 +39,10 @@ public:
 	// Current view matrix computation
 	Matrix4 getViewMatrix() const;
 
+	// Project view onto near clipping plane
+	Matrix4 getProjMatrix(float fovY, float aspect,
+		float near, float far) const;
+
 	// Helpers
 	float getZoom() const;
 	Vec3 getFront();

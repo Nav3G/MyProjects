@@ -1,12 +1,13 @@
-﻿  Triangle.cpp
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Triangle.cpp(80,24): warning C4244: 'argument': conversion from 'float' to 'uint8_t', possible loss of data
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Triangle.cpp(80,21): warning C4244: 'argument': conversion from 'float' to 'uint8_t', possible loss of data
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Triangle.cpp(80,18): warning C4244: 'argument': conversion from 'float' to 'uint8_t', possible loss of data
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Triangle.cpp(127,24): warning C4244: 'argument': conversion from 'float' to 'uint8_t', possible loss of data
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Triangle.cpp(127,21): warning C4244: 'argument': conversion from 'float' to 'uint8_t', possible loss of data
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Triangle.cpp(127,18): warning C4244: 'argument': conversion from 'float' to 'uint8_t', possible loss of data
+﻿  Renderer.cpp
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Renderer.cpp(104,3): error C2065: 'BBox': undeclared identifier
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Renderer.cpp(104,8): error C2146: syntax error: missing ';' before identifier 'bbox'
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Renderer.cpp(104,8): error C2065: 'bbox': undeclared identifier
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Renderer.cpp(104,15): error C3861: 'computeBBox': identifier not found
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Renderer.cpp(107,16): error C2065: 'bbox': undeclared identifier
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Renderer.cpp(107,32): error C2065: 'bbox': undeclared identifier
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Renderer.cpp(109,17): error C2065: 'bbox': undeclared identifier
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\Renderer.cpp(109,33): error C2065: 'bbox': undeclared identifier
   main.cpp
 E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(228,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(234,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   Generating Code...
-  2Drasterization.vcxproj -> E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\x64\Debug\2Drasterization.exe

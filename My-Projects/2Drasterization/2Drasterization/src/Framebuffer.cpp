@@ -56,23 +56,51 @@ void Framebuffer::setDepthBuffer(float depth, int y, int x)
 }
 
 // Grid drawing
-void Framebuffer::drawLine(const Vec2& p0, const Vec2& p1, Color c)
+void Framebuffer::drawLine(const Vec2& p0, const Vec2& p1, float z0, float z1, Color c)
 {
-	int x0 = int(p0.x), y0 = int(p0.y);
-	int x1 = int(p1.x), y1 = int(p1.y);
-	int x = x0, y = y0;
-	int dx = abs(x1 - x0), dy = abs(y1 - y0);
-	int sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
-	int err = dx - dy;
-	while (true) {
-		if (x >= 0 && x < width && y >= 0 && y < height) {
-			setPixel(x, y, c, /*depth=*/0);
-		}
-		if (x == x1 && y == y1) break;
-		int e2 = err * 2;
-		if (e2 > -dy) { err -= dy; x += sx; }
-		if (e2 < dx) { err += dx; y += sy; }
-	}
+    // Convert to integer pixel coords
+    int x0 = int(std::floor(p0.x));
+    int y0 = int(std::floor(p0.y));
+    int x1 = int(std::floor(p1.x));
+    int y1 = int(std::floor(p1.y));
+
+    int dx = std::abs(x1 - x0);
+    int dy = std::abs(y1 - y0);
+    int sx = (x0 < x1 ? 1 : -1);
+    int sy = (y0 < y1 ? 1 : -1);
+    int err = dx - dy;
+
+    int x = x0, y = y0;
+    while (true) {
+        // 1) Compute interpolation factor t without risking 0/0
+        float t = 0.0f;
+        if (dx >= dy) {
+            int span = x1 - x0;
+            if (span != 0) t = float(x - x0) / float(span);
+        }
+        else {
+            int span = y1 - y0;
+            if (span != 0) t = float(y - y0) / float(span);
+        }
+
+        // 2) Interpolate depth
+        float depth = (1.0f - t) * z0 + t * z1;
+
+        // 3) *Only* read/write the depthBuffer if x,y are in [0..width-1]×[0..height-1]
+        if (x >= 0 && x < width && y >= 0 && y < height) {
+            size_t idx = size_t(y) * width + size_t(x);
+            if (depth < depthBuffer[idx]) {
+                // safe to write both colorBuffer and depthBuffer
+                setPixel(x, y, c, depth);
+            }
+        }
+
+        // Advance Bresenham
+        if (x == x1 && y == y1) break;
+        int e2 = err * 2;
+        if (e2 > -dy) { err -= dy; x += sx; }
+        if (e2 < dx) { err += dx; y += sy; }
+    }
 }
 
 // Export to PPM

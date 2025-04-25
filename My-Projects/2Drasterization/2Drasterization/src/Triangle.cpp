@@ -13,8 +13,8 @@ Triangle::Triangle(const Vec3& a, const Vec3& b, const Vec3& c,
     color2 = col2;
 
     for (int i = 0; i < 3; ++i) {
-        invW[i] = 1.0f;                     // “1/w == 1” is a no-op fallback
-        rOverW[i] = colorAt(i).r;            // fallback to plain color.r
+        invW[i] = 1.0f;                     
+        rOverW[i] = colorAt(i).r;            
         gOverW[i] = colorAt(i).g;
         bOverW[i] = colorAt(i).b;
     }
@@ -25,13 +25,6 @@ Triangle::Triangle(const Vec3& a, const Vec3& b, const Vec3& c)
     v0 = a;
     v1 = b;
     v2 = c;
-
-    for (int i = 0; i < 3; ++i) {
-        invW[i] = 1.0f;                     // “1/w == 1” is a no-op fallback
-        rOverW[i] = colorAt(i).r;            // fallback to plain color.r
-        gOverW[i] = colorAt(i).g;
-        bOverW[i] = colorAt(i).b;
-    }
 }
 
 // Utility functions
@@ -110,18 +103,14 @@ void Triangle::preparePerspective(const float clipW[3])
 }
 Color Triangle::interpolateColorPC(const Barycentrics& bary) const
 {
-    float oneOverW = bary.alpha * invW[0]
-        + bary.beta * invW[1]
+    float oneOverW = bary.alpha * invW[0] + bary.beta * invW[1]
         + bary.gamma * invW[2];
 
-    float r = (bary.alpha * rOverW[0]
-        + bary.beta * rOverW[1]
+    float r = (bary.alpha * rOverW[0] + bary.beta * rOverW[1]
         + bary.gamma * rOverW[2]) / oneOverW;
-    float g = (bary.alpha * gOverW[0]
-        + bary.beta * gOverW[1]
+    float g = (bary.alpha * gOverW[0] + bary.beta * gOverW[1]
         + bary.gamma * gOverW[2]) / oneOverW;
-    float b = (bary.alpha * bOverW[0]
-        + bary.beta * bOverW[1]
+    float b = (bary.alpha * bOverW[0] + bary.beta * bOverW[1]
         + bary.gamma * bOverW[2]) / oneOverW;
 
     return Color(r, g, b);

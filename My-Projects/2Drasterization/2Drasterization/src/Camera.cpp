@@ -101,6 +101,31 @@ Matrix4 Camera::getViewMatrix() const
 	return V;
 }
 
+// Build projection matrix
+// Transforms each world space coordinate to the near clipping plane
+Matrix4 Camera::getProjMatrix(float fovY, float aspect,
+	float near, float far) const
+{
+	// Start with a zero matrix
+	Matrix4 P;
+
+	// Compute focal scale from vertical FOV
+	float f = 1.0f / std::tan(fovY * 0.5f);
+
+	// X and Y scale
+	P(0, 0) = f / aspect;
+	P(1, 1) = f;
+
+	// Z remap: [near,far] -> [-1,1]
+	P(2, 2) = -(far + near) / (far - near);
+	P(2, 3) = -2.0f * far * near / (far - near);
+
+	// W component to perform perspective divide
+	P(3, 2) = -1.0f;
+
+	return P;
+}
+
 // Helpers
 float Camera::getZoom() const
 {

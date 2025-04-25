@@ -3,9 +3,9 @@
 // Constructors
 Vec4::Vec4() : x_(0.0f), y_(0.0f), z_(0.0f), w_(1.0f) {}
 Vec4::Vec4(float xVal, float yVal, float zVal, float wVal) : x_(xVal), 
-	y_(yVal), z_(zVal), w_(1.0f) {}
+	y_(yVal), z_(zVal), w_(wVal) {}
 
-// Accesors
+// Accessors
 float Vec4::x() const
 {
 	return x_;

@@ -198,7 +198,7 @@ int main()
         Vec3(12.0f, -10.f, 6.0f),
         Vec3(11.0f, -10.f, 9.0f),
         Vec3(10.0f, -11.0f, 7.0f),
-        Color(155, 0, 255), Color(0, 255, 0), Color(0, 0, 255));
+        Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255));
     worldScene.emplace_back(
         Vec3(6.0f, -7.0f, -4.0f),
         Vec3(11.0f, -10.0f, -1.0f),
@@ -206,8 +206,8 @@ int main()
         Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255));
 
     // Polygon test
-    Vec4Poly fanTest = { {0.0f, 0.0f, 0.0f, 1.0f}, {5.0f, 0.0f, 0.0f, 1.0f},
-        {5.0f, -5.0f, 0.0f, 1.0f}, {0.0f, -5.0f, 0.0f, 1.0f} };
+    Vec4Poly fanTest = { {0.0f, 0.0f, 0.0f, 1.0f}, {6.0f, 0.0f, 0.0f, 1.0f},
+         {8.0f, -4.0f, 0.0f, 1.0f}, { 3.0f, -7.0f, 0.0f, 1.0f } , {-2.0f, -4.0f, 0.0f, 1.0f} };
 
     std::vector<Tri4> testpoly = triangulateFan(fanTest);
     for (Tri4 tri : testpoly)
@@ -281,7 +281,7 @@ int main()
         float aspect = float(fb.getWidth()) / float(fb.getHeight());
 
         Matrix4 V = cam.getViewMatrix();
-        Matrix4 P = Matrix4::perspective(deg2rad(cam.getZoom()), aspect, near, far);
+        Matrix4 P = cam.getProjMatrix(deg2rad(cam.getZoom()), aspect, near, far);
         Matrix4 M = Matrix4::identity();
         //*
         
@@ -290,14 +290,14 @@ int main()
         screenScene.reserve(worldScene.size());
         screenScene.clear();
 
-        // Full entity transform
+        // Full entity transform and clipping
         for (const auto& wtri : worldScene)
         {
             // Triangle transform
             // 1) World space --> homogenous coords, i.e. with w element = 1
-            Vec4 h0(wtri.v0.x_, wtri.v0.y_, wtri.v0.z_, 1);
-            Vec4 h1(wtri.v1.x_, wtri.v1.y_, wtri.v1.z_, 1);
-            Vec4 h2(wtri.v2.x_, wtri.v2.y_, wtri.v2.z_, 1);
+            Vec4 h0(wtri.v0.x_, wtri.v0.y_, wtri.v0.z_, 1.0f);
+            Vec4 h1(wtri.v1.x_, wtri.v1.y_, wtri.v1.z_, 1.0f);
+            Vec4 h2(wtri.v2.x_, wtri.v2.y_, wtri.v2.z_, 1.0f);
 
             // 2) VM transform: scale * camera space transform
             // homogenous --> camera space
@@ -307,8 +307,9 @@ int main()
 
             // 3) Back-face culling
             // Compute triangle normal in camera space
-             Vec3 normal = (cam1 - cam0).cross(cam2 - cam0);
-             if (normal.z_ <= 0) continue; // skip
+            if (cam0.z() > -near && cam1.z() > -near && cam2.z() > -near) continue;
+            Vec3 normal = (cam1 - cam0).cross(cam2 - cam0);
+            if (normal.z_ <= 0) continue; // skip
 
             // 4) Perspective transform
             // cam space --> clip space
@@ -316,45 +317,95 @@ int main()
             Vec4 c1 = P * cam1;
             Vec4 c2 = P * cam2;
 
-            // 4.1) Perspective-correct interpolation, storing ws
+            // 4.1) Clip space check for object being fully outside frustum
+            bool isOutside = false;
+            bool needsClip = false;
+
+            for (auto f : { planeLeft, planeRight, planeBottom, planeTop, planeNear, planeFar }) 
+            {
+                float d0 = f(c0), d1 = f(c1), d2 = f(c2);
+                // 1) Entirely outside?
+                if (d0 < 0 && d1 < 0 && d2 < 0) { isOutside = true; break; }
+                // 2) Partially inside (i.e. some inside, some outside)?
+                if (d0 < 0 || d1 < 0 || d2 < 0) { needsClip = true; }
+            }
+
+            if (isOutside) continue;  // skip the triangle altogether
+
+            // 4.2) Perspective-correct interpolation, storing ws before any perspective divide
             float clipW[3] = { c0.w(), c1.w(), c2.w() };
 
-            // 5) Perspective divide to map each point to NDC on the [-1, 1]^3 cube.
-            // Basically we divide by the w comp in clip space, which has taken on the
-            // value -P_cam,z.
-            // clip space --> NDC
-            Vec4 n0 = c0.perspectiveDivide();
-            Vec4 n1 = c1.perspectiveDivide();
-            Vec4 n2 = c2.perspectiveDivide();
-            
-            // 6) Frustum clipping
-            Vec4Poly poly = { n0, n1, n2 };
-
-            poly = clipPolygon(poly, planeLeft);
-            poly = clipPolygon(poly, planeRight);
-            poly = clipPolygon(poly, planeBottom);
-            poly = clipPolygon(poly, planeTop);
-            poly = clipPolygon(poly, planeNear);
-            poly = clipPolygon(poly, planeFar);
-
-            if (poly.empty())
-                continue;   // no part of this triangle remains in view frustum
-
-            auto fans = triangulateFan(poly);
-
-            for (const Tri4& tri4 : fans)
+            if (!needsClip) 
             {
-                // 7) NDC --> screen space [0, w] x [0, h] for the framebuffer
-                Vec3 s0 = fb.toScreen(tri4[0]);
-                Vec3 s1 = fb.toScreen(tri4[1]);
-                Vec3 s2 = fb.toScreen(tri4[2]);
+                // case 1: fully inside —> go straight to NDC -> screen and emit one Triangle
+                
+                // 5i) Perspective divide to map each point to NDC on the[-1, 1] ^ 3 cube
+                // Basically we divide by the w comp in clip space, which has taken on the
+                // value -P_cam,z.
+                // clip space --> NDC
+                Vec4 n0 = c0.perspectiveDivide();
+                Vec4 n1 = c1.perspectiveDivide();
+                Vec4 n2 = c2.perspectiveDivide();
 
-                // 8) Fill the screen space array with the transformed triangle
+                // 6i) NDC --> screen space [0, w] x [0, h] for the framebuffer
+                Vec3 s0 = fb.toScreen(n0);
+                Vec3 s1 = fb.toScreen(n1);
+                Vec3 s2 = fb.toScreen(n2);
+
+                // 7i) Fill the screen space array with the transformed triangle
                 Triangle tri(s0, s1, s2, wtri.color0, wtri.color1, wtri.color2);
                 tri.preparePerspective(clipW);
                 screenScene.emplace_back(tri);
             }
-            //*
+            else
+            {
+                // case 2: partial -> existing clipPolygon() + triangulateFan()
+                
+                // 6ii) Frustum clipping
+                // Make a VectexPoly containing the clip space coords and color data
+                VertexPoly poly = {
+                { c0, wtri.color0 },
+                { c1, wtri.color1 },
+                { c2, wtri.color2 } };
+
+                // Perform the frustum check to determine if the polygon intersects any fustum plane
+                // and clip it if it does
+                for (auto f : { planeLeft, planeRight, planeBottom, planeTop, planeNear, planeFar }) {
+                    poly = clipPolygon(poly, f);
+                    if (poly.empty()) break;
+                }
+                if (poly.empty()) continue;  // fully culled
+
+                // Fan out the newly clipped polygon
+                auto fans = triangulateFan(poly);
+
+                for (auto& triV : fans)
+                {
+                    // 5ii) Perspective divide to map each point to NDC on the[-1, 1] ^ 3 cube
+                    // Basically we divide by the w comp in clip space, which has taken on the
+                    // value -P_cam,z.
+                    // clip space --> NDC
+                    Vec4 ndc0 = triV[0].clipPos.perspectiveDivide();
+                    Vec4 ndc1 = triV[1].clipPos.perspectiveDivide();
+                    Vec4 ndc2 = triV[2].clipPos.perspectiveDivide();
+
+                    // 6ii) NDC --> screen space [0, w] x [0, h] for the framebuffer
+                    Vec3 s0 = fb.toScreen(ndc0);
+                    Vec3 s1 = fb.toScreen(ndc1);
+                    Vec3 s2 = fb.toScreen(ndc2);
+
+                    // Culled vertex color data
+                    Color col1 = triV[1].color;
+                    Color col0 = triV[0].color;
+                    Color col2 = triV[2].color;
+
+                    // 8ii) Fill the screen space array with the transformed triangle
+                    Triangle tri(s0, s1, s2, col0, col1, col2);
+                    tri.preparePerspective(clipW);
+                    screenScene.emplace_back(tri);
+                }
+                //*
+            }
         }
 
         // Clear software framebuffer.
@@ -375,7 +426,7 @@ int main()
             {
                 for (int x = bbox.minX; x <= bbox.maxX; x++)
                 {
-                    // Get the center of the pixel
+                    // Get the center of a pixel
                     Vec3 p(x + 0.5f, y + 0.5f, 0);
                     if (tri.contains(p))
                     {

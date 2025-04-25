@@ -1,4 +1,5 @@
 #include "GeometryUtils.h"
+#include "PipelineTypes.h"
 #include <stdexcept>
 #include <iostream>
 #include <algorithm>
@@ -26,9 +27,19 @@ namespace GeometryUtils
 
 		return tris;
 	}
+	std::vector<Tri4rgb> triangulateFan(const VertexPoly& poly)
+	{
+		std::vector<Tri4rgb> fans;
+		if (poly.size() < 3) return fans;
+
+		for (size_t i = 1; i + 1 < poly.size(); ++i) {
+			fans.push_back({ poly[0], poly[i], poly[i + 1] });
+		}
+		return fans;
+	}
 
 	// Compute intersection point of segment AB with plane defined by f:
-	// f(A) >= 0 is inside
+	// f(A) >= 0 is inside.
 	// Then given the line I=A+t(B-A) i.e. the edge defined by A and B, we 
 	// want the value t such that our point is on the plane. We solve 
 	// f(A + t(B-A)) = f(A) + t(f(B) - f(A)) = 0 ==> t = f(A)/(f(A) - f(B)).
@@ -48,6 +59,21 @@ namespace GeometryUtils
 		if (t > 1.0f) t = 1.0f;
 		Vec4 I = A + (B - A) * t;		// linear interpolation in Vec4 space
 		return I;
+	}
+
+	Vertex intersectPlane(const Vertex& A, const Vertex& B, PlaneFn f)
+	{
+		float dA = f(A.clipPos), dB = f(B.clipPos);
+		float t = dA / (dA - dB);				// param along A->B
+		if (t < 0.0f) t = 0.0f;					// Clamp t
+		if (t > 1.0f) t = 1.0f;
+
+		// 1) interpolate clip space pos
+		Vec4  P = A.clipPos + (B.clipPos - A.clipPos) * t;
+		// 2) linearly interpolate color
+		Color C = A.color * (1 - t) + (B.color * t);
+
+		return { P, C };
 	}
 
 	// Clip a convex polygon against a single plane.
@@ -72,12 +98,32 @@ namespace GeometryUtils
 			bool inA = (dA >= EPS);
 			bool inB = (dB >= EPS);
 
-			if (inA && inB) output.push_back(B);
-			else if (inA && !inB) output.push_back(intersectPlane(A, B, f));
-			else if (!inA && inB) { output.push_back(intersectPlane(A, B, f)); output.push_back(B); }
+			if (inA && inB) output.push_back(B); // B is inside -> keep it
+			else if (inA && !inB) output.push_back(intersectPlane(A, B, f)); // A -> B  exiting: add intersection only
+			else if (!inA && inB) { output.push_back(intersectPlane(A, B, f)); output.push_back(B); } // A->B entering: add intersection then B
 		}
 
 		return output;
+	}
+	VertexPoly clipPolygon(const VertexPoly& in, PlaneFn f) {
+		VertexPoly out;
+		if (in.empty()) return out;
+
+		for (size_t i = 0; i < in.size(); ++i) {
+			const Vertex& A = in[i];
+			const Vertex& B = in[(i + 1) % in.size()];
+
+			const float EPS = 1e-3f;
+			bool inA = (f(A.clipPos) >= EPS);
+			bool inB = (f(B.clipPos) >= EPS);
+
+			if (inA && inB) out.push_back(B); // B is inside -> keep it
+			else if (inA && !inB) out.push_back(intersectPlane(A, B, f)); // A -> B  exiting: add intersection only
+			else if (!inA && inB) { out.push_back(intersectPlane(A, B, f)); 
+				out.push_back(B); } // A->B entering: add intersection then B
+			// else both outside -> nothing
+		}
+		return out;
 	}
 
 	// Clip-space plane tests (>=0 means inside):

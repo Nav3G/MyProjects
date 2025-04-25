@@ -26,8 +26,6 @@ public:
     float invW[3];
     float rOverW[3], gOverW[3], bOverW[3];
 
-
-
     // Constructor
     Triangle(const Vec3& a, const Vec3& b, const Vec3& c, 
         const Color col0, const Color col1, const Color col2);  // Color attributed to each vertex
