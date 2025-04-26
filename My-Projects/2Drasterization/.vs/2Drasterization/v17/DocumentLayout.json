@@ -3,28 +3,28 @@
   "WorkspaceRootPath": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\PipelineTypes.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\includes\\PipelineTypes.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\gpu\\RasterKernel.cu||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\gpu\\RasterKernel.cu||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Renderer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\Renderer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\gpu\\RasterKernel.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\includes\\gpu\\RasterKernel.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Renderer.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\includes\\Renderer.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\gpu\\CudaRenderer.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\includes\\gpu\\CudaRenderer.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\gpu\\CudaRenderer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\gpu\\CudaRenderer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Triangle3D.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\includes\\Triangle3D.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Mesh.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\includes\\Mesh.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\pipeline\\Renderer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{00BD7AFC-F669-4EB4-84F2-0FFDAF5C3DBD}|2Drasterization\\2Drasterization.vcxproj|solutionrelative:2Drasterization\\src\\pipeline\\Renderer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,17 +34,17 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "main.cpp",
               "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\main.cpp",
               "RelativeDocumentMoniker": "2Drasterization\\src\\main.cpp",
               "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\main.cpp",
               "RelativeToolTip": "2Drasterization\\src\\main.cpp",
-              "ViewState": "AgIAAIYBAAAAAAAAAADgv7sBAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAO8AAAAAAAAAAAAYwCkBAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-04-15T22:04:20.942Z",
               "IsPinned": true,
@@ -56,67 +56,67 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Renderer.h",
-              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Renderer.h",
-              "RelativeDocumentMoniker": "2Drasterization\\includes\\Renderer.h",
-              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Renderer.h",
-              "RelativeToolTip": "2Drasterization\\includes\\Renderer.h",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAB0AAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-25T04:58:44.549Z",
+              "DocumentIndex": 5,
+              "Title": "Renderer.cpp",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\pipeline\\Renderer.cpp",
+              "RelativeDocumentMoniker": "2Drasterization\\src\\pipeline\\Renderer.cpp",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\pipeline\\Renderer.cpp",
+              "RelativeToolTip": "2Drasterization\\src\\pipeline\\Renderer.cpp",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAADMAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-26T05:05:57.417Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Renderer.cpp",
-              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Renderer.cpp",
-              "RelativeDocumentMoniker": "2Drasterization\\src\\Renderer.cpp",
-              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\Renderer.cpp",
-              "RelativeToolTip": "2Drasterization\\src\\Renderer.cpp",
-              "ViewState": "AgIAABcAAAAAAAAAAAAiwG8AAAAEAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "CudaRenderer.cpp",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\gpu\\CudaRenderer.cpp",
+              "RelativeDocumentMoniker": "2Drasterization\\src\\gpu\\CudaRenderer.cpp",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\gpu\\CudaRenderer.cpp",
+              "RelativeToolTip": "2Drasterization\\src\\gpu\\CudaRenderer.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC0AAABEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-04-25T05:03:14.421Z",
+              "WhenOpened": "2025-04-26T04:35:58.808Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CudaRenderer.h",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\gpu\\CudaRenderer.h",
+              "RelativeDocumentMoniker": "2Drasterization\\includes\\gpu\\CudaRenderer.h",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\gpu\\CudaRenderer.h",
+              "RelativeToolTip": "2Drasterization\\includes\\gpu\\CudaRenderer.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-26T03:34:45.333Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "PipelineTypes.h",
-              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\PipelineTypes.h",
-              "RelativeDocumentMoniker": "2Drasterization\\includes\\PipelineTypes.h",
-              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\PipelineTypes.h",
-              "RelativeToolTip": "2Drasterization\\includes\\PipelineTypes.h",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-25T04:52:41.403Z",
+              "Title": "RasterKernel.cu",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\gpu\\RasterKernel.cu",
+              "RelativeDocumentMoniker": "2Drasterization\\src\\gpu\\RasterKernel.cu",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\src\\gpu\\RasterKernel.cu",
+              "RelativeToolTip": "2Drasterization\\src\\gpu\\RasterKernel.cu",
+              "ViewState": "AgIAAKgAAAAAAAAAAAAAAL4AAABMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-04-26T03:25:03.755Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Triangle3D.h",
-              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Triangle3D.h",
-              "RelativeDocumentMoniker": "2Drasterization\\includes\\Triangle3D.h",
-              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Triangle3D.h",
-              "RelativeToolTip": "2Drasterization\\includes\\Triangle3D.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "RasterKernel.h",
+              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\gpu\\RasterKernel.h",
+              "RelativeDocumentMoniker": "2Drasterization\\includes\\gpu\\RasterKernel.h",
+              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\gpu\\RasterKernel.h",
+              "RelativeToolTip": "2Drasterization\\includes\\gpu\\RasterKernel.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-25T04:45:38.503Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Mesh.h",
-              "DocumentMoniker": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Mesh.h",
-              "RelativeDocumentMoniker": "2Drasterization\\includes\\Mesh.h",
-              "ToolTip": "E:\\Files\\Programming\\VisualStudio\\Projects\\My-Projects\\2Drasterization\\2Drasterization\\includes\\Mesh.h",
-              "RelativeToolTip": "2Drasterization\\includes\\Mesh.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-25T04:39:08.366Z",
+              "WhenOpened": "2025-04-26T04:47:31.268Z",
               "EditorCaption": ""
             }
           ]

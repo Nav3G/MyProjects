@@ -54,6 +54,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.8.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -140,36 +141,45 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="C:\Users\Evan\Downloads\glad\src\glad.c" />
-    <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\GeometryUtils.cpp" />
-    <ClCompile Include="src\Grid.cpp" />
-    <ClCompile Include="src\Camera.cpp" />
-    <ClCompile Include="src\Matrix4.cpp" />
-    <ClCompile Include="src\Framebuffer.cpp" />
-    <ClCompile Include="src\Color.cpp" />
+    <ClCompile Include="src\gpu\CudaRenderer.cpp" />
+    <ClCompile Include="src\pipeline\RasterUtils.cpp" />
+    <ClCompile Include="src\pipeline\Renderer.cpp" />
+    <ClCompile Include="src\pipeline\GeometryUtils.cpp" />
+    <ClCompile Include="src\framework\Grid.cpp" />
+    <ClCompile Include="src\scene\Camera.cpp" />
+    <ClCompile Include="src\core\Matrix4.cpp" />
+    <ClCompile Include="src\framework\Framebuffer.cpp" />
+    <ClCompile Include="src\core\Color.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Vec2.cpp" />
-    <ClCompile Include="src\Triangle.cpp" />
-    <ClCompile Include="src\Vec3.cpp" />
-    <ClCompile Include="src\Vec4.cpp" />
+    <ClCompile Include="src\core\Vec2.cpp" />
+    <ClCompile Include="src\core\Vec3.cpp" />
+    <ClCompile Include="src\core\Vec4.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="includes\GeometryUtils.h" />
-    <ClInclude Include="includes\Grid.h" />
-    <ClInclude Include="includes\Camera.h" />
-    <ClInclude Include="includes\Framebuffer.h" />
-    <ClInclude Include="includes\Color.h" />
-    <ClInclude Include="includes\PipelineTypes.h" />
-    <ClInclude Include="includes\Vec2.h" />
-    <ClInclude Include="includes\Triangle.h" />
-    <ClInclude Include="includes\Vec3.h" />
-    <ClInclude Include="includes\Vec4.h" />
-    <ClInclude Include="includes\Matrix4.h" />
-    <ClInclude Include="includes\Mesh.h" />
-    <ClInclude Include="includes\Triangle3D.h" />
-    <ClInclude Include="includes\Renderer.h" />
+    <ClInclude Include="includes\gpu\CudaRenderer.h" />
+    <ClInclude Include="includes\pipeline\GeometryUtils.h" />
+    <ClInclude Include="includes\framework\Grid.h" />
+    <ClInclude Include="includes\scene\Camera.h" />
+    <ClInclude Include="includes\framework\Framebuffer.h" />
+    <ClInclude Include="includes\core\Color.h" />
+    <ClInclude Include="includes\pipeline\PipelineTypes.h" />
+    <ClInclude Include="includes\pipeline\RasterUtils.h" />
+    <ClInclude Include="includes\core\Vec2.h" />
+    <ClInclude Include="includes\core\Vec3.h" />
+    <ClInclude Include="includes\core\Vec4.h" />
+    <ClInclude Include="includes\core\Matrix4.h" />
+    <ClInclude Include="includes\scene\Mesh.h" />
+    <ClInclude Include="includes\scene\Triangle3D.h" />
+    <ClInclude Include="includes\pipeline\Renderer.h" />
+    <ClInclude Include="includes\gpu\RasterKernel.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\gpu\RasterKernel.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.8.targets" />
   </ImportGroup>
 </Project>
