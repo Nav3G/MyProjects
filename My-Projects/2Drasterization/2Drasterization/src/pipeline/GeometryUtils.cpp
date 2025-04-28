@@ -6,6 +6,8 @@
 
 namespace GeometryUtils
 {
+	static constexpr float EPS = 1e-3f;
+
 	// Triangulate a convex polygon into a fan of triangles around poly[0].
 	// Input: poly.size() >= 3, convex order.
 	// Output: list of Tri4 where each Tri4 is {poly[0], poly[i], poly[i+1]}.
@@ -113,7 +115,6 @@ namespace GeometryUtils
 			const Vertex& A = in[i];
 			const Vertex& B = in[(i + 1) % in.size()];
 
-			const float EPS = 1e-3f;
 			bool inA = (f(A.clipPos) >= EPS);
 			bool inB = (f(B.clipPos) >= EPS);
 

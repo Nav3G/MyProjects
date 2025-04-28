@@ -4,10 +4,10 @@
 
 class Mesh {
 public:
+    // Triangles
 	std::vector<Triangle3D> triangles;
 
     Mesh() = default;
-    Mesh(std::vector<Triangle3D> tris)
-        : triangles(std::move(tris)) {}
+    Mesh(std::vector<Triangle3D> tris) : triangles(std::move(tris)) {}
 };
 

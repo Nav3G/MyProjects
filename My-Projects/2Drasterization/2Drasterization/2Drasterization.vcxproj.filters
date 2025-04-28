@@ -42,7 +42,7 @@
     <ClCompile Include="src\scene\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\framework\Grid.cpp">
+    <ClCompile Include="src\pipeline\GridRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\pipeline\GeometryUtils.cpp">
@@ -80,7 +80,7 @@
     <ClInclude Include="includes\scene\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes\framework\Grid.h">
+    <ClInclude Include="includes\pipeline\GridRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes\pipeline\GeometryUtils.h">

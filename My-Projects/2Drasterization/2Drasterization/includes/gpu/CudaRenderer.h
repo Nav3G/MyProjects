@@ -24,5 +24,16 @@ private:
 	DevicePrimitive* d_prims = nullptr;
 	uchar3* d_color = nullptr;
 	float* d_depth = nullptr;
+
+	// Host-side staging buffer: reserve once, reuse every frame
+	std::vector<DevicePrimitive> hostPrims_;
+
+	// host-side spatial partition lists
+	std::vector<int> hostCellOffsets_;
+	std::vector<int> hostCellTriIndices_;
+
+	// device-side spatial partition lists 
+	int* d_cellOffsets_ = nullptr;
+	int* d_cellTriIndices_ = nullptr;
 };
 

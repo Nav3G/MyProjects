@@ -1,8 +1,42 @@
 ﻿// RasterKernel.cu
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
-#include <cfloat>              // for FLT_MAX
 #include "gpu/RasterKernel.h"
+
+// Raster Helpers
+__device__ float edgeFn(const float2 a, const float2 b, const float2 p) {
+    return (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+}
+
+__device__ bool insideTriangle(
+    const float2 s0, const float2 s1, const float2 s2,
+    const float2 p, float& alpha, float& beta, float& gamma)
+{
+    float area = edgeFn(s0, s1, s2);
+    alpha = edgeFn(p, s1, s2) / area;
+    beta = edgeFn(p, s2, s0) / area;
+    gamma = edgeFn(p, s0, s1) / area;
+    return (alpha >= 0 && beta >= 0 && gamma >= 0);
+}
+
+__device__ float interpDepth(
+    float z0, float z1, float z2,
+    float alpha, float beta, float gamma)
+{
+    return alpha * z0 + beta * z1 + gamma * z2;
+}
+
+__device__ uchar3 interpColorPC(
+    const uchar3 c0, const uchar3 c1, const uchar3 c2,
+    const float invW0, const float invW1, const float invW2,
+    float alpha, float beta, float gamma)
+{
+    float oW = alpha * invW0 + beta * invW1 + gamma * invW2;
+    float r = (alpha * c0.x * invW0 + beta * c1.x * invW1 + gamma * c2.x * invW2) / oW;
+    float g = (alpha * c0.y * invW0 + beta * c1.y * invW1 + gamma * c2.y * invW2) / oW;
+    float b = (alpha * c0.z * invW0 + beta * c1.z * invW1 + gamma * c2.z * invW2) / oW;
+    return make_uchar3(r, g, b);
+}
 
 // In CUDA, everytime we launch a kernel with "myKernel<<<gridDim, blockDim>>>(…);"
 // the CUDA runtime magically creates a two-level exectution space: Grid of thread 
@@ -40,7 +74,7 @@
 // entries along. Then we just add the x coordinate of the thread we want xIdx = 
 // 5 * 16 + 3 (3 since we are in the next row but 4 along) = column 83. Same for y.
 //
-// Bounds check
+// Bounds check: self explanatory
 //
 // Buffer indexing:
 // Each thread is responsible for is own pixel calculations. They essentially each 
@@ -49,8 +83,8 @@
 // colorBuf[idx] = bgColor; depthBuf[idx] = initDepth; In this case, just fills the 
 // associted pixel in the buffer with default values.
 __global__ void clearBuffersKernel(
-    uchar3* colorBuf,
-    float* depthBuf,
+    uchar3* d_colorBuf,
+    float* d_depthBuf,
     int     W,
     int     H,
     uchar3  bgColor,
@@ -60,8 +94,8 @@ __global__ void clearBuffersKernel(
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     if (x >= W || y >= H) return;
     int idx = y * W + x;
-    colorBuf[idx] = bgColor;
-    depthBuf[idx] = initDepth;
+    d_colorBuf[idx] = bgColor;
+    d_depthBuf[idx] = initDepth;
 }
 
 // dim3: a struct that stores 3 dimension, default z = 1. We create
@@ -77,7 +111,7 @@ __global__ void clearBuffersKernel(
 // the driver: "please run grid.x * grid.y blocks, each with block.x * block.y 
 // threads."
 //
-// cudaDeviceSynchronize(): makes the CPU block until all previously issued GPU work 
+// cudaDeviceSynchronize(): makes the CPU ignore until all previously issued GPU work 
 // is completed
 void launchClearBuffers(
     uchar3* d_colorBuf,
@@ -99,126 +133,112 @@ void launchClearBuffers(
 // ---------------------------------------------------
 // 2) rasterKernel stub
 // ---------------------------------------------------
-// edge function (2D cross-product) on the device
-__device__ float edgeFn2D(float ax, float ay,
-    float bx, float by,
-    float px, float py)
-{
-    return (bx - ax) * (py - ay)
-        - (by - ay) * (px - ax);
-}
 
-__global__ void rasterKernel(
-    const DevicePrimitive* prims,
-    int      numPrims,
-    uchar3* colorBuf,
-    float* depthBuf,
-    int      W,
-    int      H)
+// Rasterization
+// For every pixel, concurrently, we test only the triangles touching that pixel's
+// tile, then interpolate depth and color, and lastly write the closest fragments.
+// For a pixel at (x,y): We start with a bounds check and skip if oustside. Next, 
+// we do a tile lookup by dividing the pixel coordinate by tilesize and defining 
+// that tile. This is the tile that pixel (x,y) lives in. Now we loop through each 
+// triangle overlapping the given tile. We fetch its vertices' screen position as well 
+// as the precopmuted clip-space interpolation data. Then we compute barycentrics, 
+// interpolate depth, test depth, and write like usual.
+static __global__
+void rasterPixelsKernel(const DevicePrimitive* prims, int numPrims,
+    const int* cellOffsets, const int* cellTriIndices,
+        uchar3* outColor, float* outDepth, 
+            int W, int H,
+                int tileSize, int numTilesX,
+                    uchar3 bgColor, float initDepth)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     if (x >= W || y >= H) return;
+
     int idx = y * W + x;
+    // Seed with clear values
+    float bestDepth = outDepth[idx];
+    uchar3 bestColor = outColor[idx];
 
-    // start with the cleared values
-    float bestZ = depthBuf[idx];
-    uchar3 bestC = colorBuf[idx];
+    // Determine tile containing pixel (x,y) and its triangle list
+    int tx = x / tileSize;
+    int ty = y / tileSize;
+    int cell = ty * numTilesX + tx;     // Which tile pixel (x,y) lives in
+    int start = cellOffsets[cell];      // The list of triangle IDs that might cover any pixel in cell
+    int end = cellOffsets[cell + 1];
 
-    // center of this pixel in screen coords
-    float px = x + 0.5f, py = y + 0.5f;
+    // Test point
+    float2 p = make_float2(x + 0.5f, y + 0.5f);
 
-    for (int i = 0; i < numPrims; ++i)
-    {
-        // load clip-space verts
-        float4 c0 = prims[i].clipPos[0];
-        float4 c1 = prims[i].clipPos[1];
-        float4 c2 = prims[i].clipPos[2];
+    // Loop ONLY the candidate triangles overlapping this tile (cell)
+    for (int ptr = start; ptr < end; ++ptr) {
+        int triID = cellTriIndices[ptr];
+        const DevicePrimitive& tri = prims[triID];       // The triangle overlapping this tile
 
-        // 1) perspective divide -> NDC
-        float invW0 = 1.0f / c0.w;
-        float invW1 = 1.0f / c1.w;
-        float invW2 = 1.0f / c2.w;
+        // Screen-space data temp holders
+        float2 s[3];            // x,y position of 3 vertices in screen-space
+        float  zs[3], invW[3];  // z depth and inverse of ws for 3 vertices
+        uchar3 col[3];          // Colors atribured to each vertex
 
-        float3 ndc0 = make_float3(c0.x * invW0,
-            c0.y * invW0,
-            c0.z * invW0);
-        float3 ndc1 = make_float3(c1.x * invW1,
-            c1.y * invW1,
-            c1.z * invW1);
-        float3 ndc2 = make_float3(c2.x * invW2,
-            c2.y * invW2,
-            c2.z * invW2);
+        // Looping through each vertex of test triangle to determine screen-space data
+        for (int v = 0; v < 3; ++v) {
+            float4 P = tri.clipPos[v];      // Clip-space point vertex
+            float wInv = 1.0f / P.w;        // 1/w
+            invW[v] = wInv;                 
 
-        // 2) NDC -> screen‐space
-        float sx0 = (ndc0.x * 0.5f + 0.5f) * W;
-        float sy0 = (1.0f - (ndc0.y * 0.5f + 0.5f)) * H;
-        float sz0 = ndc0.z;
+            // NDC
+            float ndcX = P.x * wInv;        // Perspecive divides to NDC             
+            float ndcY = P.y * wInv;            
+            zs[v] = P.z * wInv;             // post-divide depth
 
-        float sx1 = (ndc1.x * 0.5f + 0.5f) * W;
-        float sy1 = (1.0f - (ndc1.y * 0.5f + 0.5f)) * H;
-        float sz1 = ndc1.z;
+            // toScreen
+            s[v].x = (ndcX * 0.5f + 0.5f) * W;
+            s[v].y = (1.0f - (ndcY * 0.5f + 0.5f)) * H;
 
-        float sx2 = (ndc2.x * 0.5f + 0.5f) * W;
-        float sy2 = (1.0f - (ndc2.y * 0.5f + 0.5f)) * H;
-        float sz2 = ndc2.z;
+            col[v] = tri.color[v];
+        }
 
-        // 3) premultiplied colors
-        uchar3 col0 = prims[i].color[0];
-        uchar3 col1 = prims[i].color[1];
-        uchar3 col2 = prims[i].color[2];
+        // Inside-triangle test + barycentrics
+        float alpha, beta, gamma;
+        if (!insideTriangle(s[0], s[1], s[2], p, alpha, beta, gamma)) continue;
 
-        float r0 = col0.x * invW0, g0 = col0.y * invW0, b0 = col0.z * invW0;
-        float r1 = col1.x * invW1, g1 = col1.y * invW1, b1 = col1.z * invW1;
-        float r2 = col2.x * invW2, g2 = col2.y * invW2, b2 = col2.z * invW2;
-
-        // 4) compute barycentrics
-        float area = edgeFn2D(sx0, sy0, sx1, sy1, sx2, sy2);
-        if (area == 0.0f) continue;
-
-        float alpha = edgeFn2D(px, py, sx1, sy1, sx2, sy2) / area;
-        float beta = edgeFn2D(px, py, sx2, sy2, sx0, sy0) / area;
-        float gamma = 1.0f - alpha - beta;
-
-        // 5) inside‐triangle test
-        if (alpha < 0 || beta < 0 || gamma < 0) continue;
-
-        // 6) perspective‐correct depth & color
-        float oneOverW = alpha * invW0 + beta * invW1 + gamma * invW2;
-
-        float z = (alpha * sz0 + beta * sz1 + gamma * sz2);
-
-        // depth test (z already in NDC‐space, or we can divide by oneOverW)
-        if (z < bestZ)
-        {
-            // interpolate color
-            float r = (alpha * r0 + beta * r1 + gamma * r2) / oneOverW;
-            float g = (alpha * g0 + beta * g1 + gamma * g2) / oneOverW;
-            float b = (alpha * b0 + beta * b1 + gamma * b2) / oneOverW;
-
-            bestZ = z;
-            bestC = make_uchar3((uint8_t)r,
-                (uint8_t)g,
-                (uint8_t)b);
+        // Depth interpolation and test
+        float d = interpDepth(zs[0], zs[1], zs[2], alpha, beta, gamma);
+        if (d < bestDepth) {
+            bestDepth = d;
+            bestColor = interpColorPC(col[0], col[1], col[2], invW[0], invW[1], invW[2], alpha, beta, gamma);
         }
     }
 
-    // write out
-    depthBuf[idx] = bestZ;
-    colorBuf[idx] = bestC;
+    // 5) write out
+    outDepth[idx] = bestDepth;
+    outColor[idx] = bestColor;
 }
 
-void launchRasterKernel(
+// Launcher that passes clear params and calls kernel
+void launchRasterPixels(
     const DevicePrimitive* d_prims,
-    int numPrims,
+    int                    numPrims,
+    const int* d_cellOffsets,
+    const int* d_cellTriIndices,
     uchar3* d_colorBuf,
     float* d_depthBuf,
-    int     width,
-    int     height)
+    int                    width,
+    int                    height,
+    int                    tileSize,
+    int                    numTilesX)
 {
-    dim3 block(16, 16), grid((width + 15) / 16, (height + 15) / 16);
-    rasterKernel <<<grid, block>>> (d_prims, numPrims,
-        d_colorBuf, d_depthBuf,
-        width, height);
+    // Build thread grid
+    dim3 block(16, 16);
+    dim3 grid((width + 15) / 16, (height + 15) / 16);
+    uchar3 bg = make_uchar3(150, 150, 150);
+    float  id = FLT_MAX;
+    
+    // Call rasterization kernel
+    rasterPixelsKernel <<<grid, block >>> (d_prims, numPrims, d_cellOffsets, 
+        d_cellTriIndices, d_colorBuf, d_depthBuf, width, height, tileSize, numTilesX,
+            bg, id);
+
+    // Tell CPU to wait
     cudaDeviceSynchronize();
 }

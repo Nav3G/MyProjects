@@ -145,7 +145,7 @@
     <ClCompile Include="src\pipeline\RasterUtils.cpp" />
     <ClCompile Include="src\pipeline\Renderer.cpp" />
     <ClCompile Include="src\pipeline\GeometryUtils.cpp" />
-    <ClCompile Include="src\framework\Grid.cpp" />
+    <ClCompile Include="src\pipeline\GridRenderer.cpp" />
     <ClCompile Include="src\scene\Camera.cpp" />
     <ClCompile Include="src\core\Matrix4.cpp" />
     <ClCompile Include="src\framework\Framebuffer.cpp" />
@@ -158,7 +158,7 @@
   <ItemGroup>
     <ClInclude Include="includes\gpu\CudaRenderer.h" />
     <ClInclude Include="includes\pipeline\GeometryUtils.h" />
-    <ClInclude Include="includes\framework\Grid.h" />
+    <ClInclude Include="includes\pipeline\GridRenderer.h" />
     <ClInclude Include="includes\scene\Camera.h" />
     <ClInclude Include="includes\framework\Framebuffer.h" />
     <ClInclude Include="includes\core\Color.h" />

@@ -1,12 +1,5 @@
-﻿  Compiling CUDA source file src\gpu\RasterKernel.cu...
-  
-  E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\bin\HostX64\x64" -x cu   -I"E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\includes" -I"E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\glad\include" -I"E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\glfw\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\include"  -G   --keep-dir x64\Debug  -maxrregcount=0    --machine 64 --compile -cudart static  -g  -D_DEBUG -D_CONSOLE -D_UNICODE -DUNICODE -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -Xcompiler "/Fdx64\Debug\vc143.pdb" -o E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\x64\Debug\RasterKernel.cu.obj "E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\gpu\RasterKernel.cu" 
-CUDACOMPILE : nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
-  RasterKernel.cu
-  tmpxft_00005724_00000000-7_RasterKernel.cudafe1.cpp
-  CudaRenderer.cpp
-  main.cpp
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(236,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(242,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  Generating Code...
+﻿  main.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\optional(11): warning STL4038: The contents of <optional> are available only with C++17 or later.
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(237,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\2Drasterization\src\main.cpp(243,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   2Drasterization.vcxproj -> E:\Files\Programming\VisualStudio\Projects\My-Projects\2Drasterization\x64\Debug\2Drasterization.exe

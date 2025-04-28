@@ -1,7 +1,8 @@
 ﻿#include "pipeline/Renderer.h"
 
 // Constructor
-Renderer::Renderer(int width, int height) : width_(width), height_(height) {}
+Renderer::Renderer(int width, int height) : width_(width), height_(height) { prims_.reserve(10000); clipped_.reserve(10000);
+}
 
 void Renderer::render(const Camera& cam, 
 	float FovY, float aspect, float near, float far, 
@@ -150,8 +151,7 @@ void Renderer::fragmentStage(int x, int y, const Pipeline::Fragment& f,
 	}
 }
 
-std::vector<Pipeline::Primitive>
-Renderer::preparePrimitives(const Camera& cam,
+const std::vector<Pipeline::Primitive>& Renderer::preparePrimitives(const Camera& cam,
 	float FovY,
 	float aspect,
 	float near,
@@ -163,13 +163,29 @@ Renderer::preparePrimitives(const Camera& cam,
 	Matrix4 P = cam.getProjMatrix(FovY, aspect, near, far);
 
 	// 1) vertex stage
-	std::vector<Pipeline::Primitive> prims;
-	prims.reserve(scene.size() * 10); // or some guess
+	prims_.clear();
 	for (auto& mesh : scene) {
 		auto local = vertexStage(cam, mesh, P, V, near);
-		prims.insert(prims.end(), local.begin(), local.end());
+		prims_.insert(prims_.end(), local.begin(), local.end());
 	}
 
 	// 2) clip stage
-	return clipStage(prims);
+	clipped_.clear();
+	for (auto& prim : prims_) {
+		// seed polygon, clip against 6 planes, triangulate…
+		VertexPoly poly = { prim[0], prim[1], prim[2] };
+		for (auto f : { planeLeft, planeRight,
+						planeBottom, planeTop,
+						planeNear, planeFar }) {
+			poly = clipPolygon(poly, f);
+			if (poly.empty()) break;
+		}
+		if (poly.empty()) continue;
+		auto fans = triangulateFan(poly);
+		for (auto& fan : fans)
+			clipped_.push_back({ fan[0], fan[1], fan[2] });
+	}
+
+	// 4) return reference (no copy!)
+	return clipped_;
 }

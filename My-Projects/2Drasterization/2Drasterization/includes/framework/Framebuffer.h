@@ -39,8 +39,5 @@ public:
     std::vector<float>& getDepthBuffer();
     void setColorBuffer(Color color, int y, int x);
     void setDepthBuffer(float depth, int y, int x);
-
-    // Grid drawing (temp)
-    void drawLine(const Vec2& p0, const Vec2& p1, float z0, float z1, Color c);
 };
 

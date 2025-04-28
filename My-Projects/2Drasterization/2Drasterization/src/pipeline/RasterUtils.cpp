@@ -4,7 +4,7 @@ using namespace Pipeline;
 
 namespace RasterUtils
 {
-	// Bounding box type and computation
+	// Bounding computation
 	BBox computeBBox(const ScreenTriangle3D& T,
 		int w, int h)
 	{
@@ -63,5 +63,53 @@ namespace RasterUtils
 			+ bary.gamma * T.bOverW[2]) / oneOverW;
 
 		return Color(r, g, b);
+	}
+
+	// Line drawing
+	void drawLine(const Vec2& p0, const Vec2& p1, float z0, float z1, Color c, Framebuffer& fb)
+	{
+		// Convert to integer pixel coords
+		int x0 = int(std::floor(p0.x));
+		int y0 = int(std::floor(p0.y));
+		int x1 = int(std::floor(p1.x));
+		int y1 = int(std::floor(p1.y));
+
+		int dx = std::abs(x1 - x0);
+		int dy = std::abs(y1 - y0);
+		int sx = (x0 < x1 ? 1 : -1);
+		int sy = (y0 < y1 ? 1 : -1);
+		int err = dx - dy;
+
+		int x = x0, y = y0;
+		while (true) {
+			// 1) Compute interpolation factor t without risking 0/0
+			float t = 0.0f;
+			if (dx >= dy) {
+				int span = x1 - x0;
+				if (span != 0) t = float(x - x0) / float(span);
+			}
+			else {
+				int span = y1 - y0;
+				if (span != 0) t = float(y - y0) / float(span);
+			}
+
+			// 2) Interpolate depth
+			float depth = (1.0f - t) * z0 + t * z1;
+
+			// 3) *Only* read/write the depthBuffer if x,y are in [0..width-1]×[0..height-1]
+			if (x >= 0 && x < fb.getWidth() && y >= 0 && y < fb.getHeight()) {
+				size_t idx = size_t(y) * fb.getWidth() + size_t(x);
+				if (depth < fb.getDepthBuffer()[idx]) {
+					// safe to write both colorBuffer and depthBuffer
+					fb.setPixel(x, y, c, depth);
+				}
+			}
+
+			// Advance Bresenham
+			if (x == x1 && y == y1) break;
+			int e2 = err * 2;
+			if (e2 > -dy) { err -= dy; x += sx; }
+			if (e2 < dx) { err += dx; y += sy; }
+		}
 	}
 }

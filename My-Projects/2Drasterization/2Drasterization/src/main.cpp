@@ -4,7 +4,7 @@
 #include "core/Vec4.h"
 #include "core/Matrix4.h"
 #include "scene/Camera.h"
-#include "framework/Grid.h"
+#include "pipeline/GridRenderer.h"
 #include "pipeline/GeometryUtils.h"
 #include "pipeline/Renderer.h" 
 #include "gpu/CudaRenderer.h"
@@ -117,6 +117,7 @@ int gridMaxZ = 30, gridMinZ = -30;
 
 float deg2rad(float d) { return d * 3.14159265f / 180.0f; }
 
+
 int main()
 {
 #pragma region window & GLFW texture
@@ -185,7 +186,6 @@ int main()
     // Allocate empty texture storage.
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fbWidth, fbHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 #pragma endregion
-
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Create a camera
@@ -225,12 +225,13 @@ int main()
         );
     }
     //*
-    sceneMeshes.emplace_back(m1);
-    sceneMeshes.emplace_back(m2);
-    sceneMeshes.emplace_back(m3);
+    sceneMeshes.emplace_back(m1); 
+    sceneMeshes.emplace_back(m2); 
+    sceneMeshes.emplace_back(m3); 
 
     // Create grid
-    static Grid grid(gridMinX, gridMaxX, gridMinZ, gridMaxZ, 1.0f);
+    static GridRenderer grid(gridMinX, gridMaxX, gridMinZ, gridMaxZ, 2.0f);
+    // sceneMeshes.emplace_back(Mesh(grid.generateGridQuads(0.1f)));
 
     // Time information
     float lastTime = glfwGetTime();
@@ -284,15 +285,12 @@ int main()
         lastX = xpos;
         lastY = ypos;
         //* 
-
-        fb.clearColor(Color(150, 150, 150));
-        fb.clearDepth(std::numeric_limits<float>::max());
-
+        
         // Aspect ratio
         float aspect = float(fb.getWidth()) / float(fb.getHeight()); 
 
-        auto prims = renderer.preparePrimitives(
-            cam, deg2rad(cam.getZoom()), aspect, near, far, sceneMeshes);
+        auto const& prims = renderer.preparePrimitives(cam, deg2rad(cam.getZoom()), 
+            aspect, near, far, sceneMeshes);
 
         cudaR.render(prims, fb);
         

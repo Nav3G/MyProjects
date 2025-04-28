@@ -3,8 +3,11 @@
 #include <vector>
 #include <array>
 #include <functional>
+#include <optional>
 #include "core/Vec4.h"
 #include "pipeline/PipelineTypes.h"
+
+using namespace Pipeline;
 
 namespace GeometryUtils
 {

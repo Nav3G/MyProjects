@@ -26,11 +26,12 @@ private:
     void rasterStage(const std::vector<Primitive>& inPrims, Framebuffer& fb);
 
     // Stage 4: Perform depth test + write each Fragment
-    void fragmentStage(int x, int y, const Pipeline::Fragment& f,
+    void fragmentStage(int x, int y, const Fragment& f,
         Framebuffer& fb);
 
     int width_, height_;
-
+    std::vector<Primitive> prims_;
+    std::vector<Primitive> clipped_;
 public:
     Renderer(int width, int height);
 
@@ -38,7 +39,7 @@ public:
         float FovY, float aspect, float near, float far,
         const std::vector<Mesh>& scene, Framebuffer& fb);
 
-    std::vector<Pipeline::Primitive>
+    const std::vector<Primitive>&
         preparePrimitives(const Camera& cam,
             float FovY,
             float aspect,

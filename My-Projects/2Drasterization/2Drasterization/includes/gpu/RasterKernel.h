@@ -12,14 +12,16 @@
 #include <cstdint>
 
 // DevicePrimitive: 3 clip-space positions + colors
-struct DevicePrimitive {
-    float4 clipPos[3];      // x,y,z,w
+struct DevicePrimitive 
+{
+    float4 clipPos[3];      // Clip-space 4 element object (x,y,z,w)
     uchar3 color[3];        // r,g,b
 };
 
 // ScreenTriangle: after divide + toScreen (in host), upload these to device
-struct DeviceScreenTri {
-    float3 s[3];            // screen-space xyz
+struct DeviceScreenTri 
+{
+    float3 s[3];            // Screen-space 3 element object (x,y,z)
     float invW[3];          // 1/w
     float rOverW[3], gOverW[3], bOverW[3];
 };
@@ -27,12 +29,17 @@ struct DeviceScreenTri {
 // Host-callable wrappers (implemented in RasterKernel.cu)
 void launchClearBuffers(uchar3* d_colorBuf,
     float* d_depthBuf,
-    int     width,
-    int     height);
+    int width,
+    int height);
 
-void launchRasterKernel(const DevicePrimitive* d_prims,
+void launchRasterPixels(
+    const DevicePrimitive* d_prims,
     int numPrims,
+    const int* d_cellOffsets,
+    const int* d_cellTriIndices,
     uchar3* d_colorBuf,
     float* d_depthBuf,
-    int     width,
-    int     height);
+    int width,
+    int height,
+    int tileSize,
+    int  numTilesX);
