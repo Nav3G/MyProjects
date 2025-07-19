@@ -109,7 +109,7 @@ def radix2_fft(x):
     In-place radix-2 decimation-in-time FFT. x is modified and returned.
     """
     N0 = len(x)
-    N = 1 << (N0-1).bit_length()    # next pow2 ≥ N0
+    N = 1 << (N0-1).bit_length()    # next pow2 >= N0
     pad_amt = N - N0
 
     # 2) pad out the data
