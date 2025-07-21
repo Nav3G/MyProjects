@@ -1,5 +1,7 @@
 from DSP.FIR_LPF import *
-from DSP.DFT import *
+from DSP.spectrum import *
+from DSP.plotting import *
+from DSP. domains import *
 from DSP.AM_demo import *
 
 import numpy as np

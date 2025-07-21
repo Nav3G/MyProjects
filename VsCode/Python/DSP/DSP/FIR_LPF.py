@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from DSP.DFT import radix2_fft, naive_CT
+from DSP.transforms import radix2_fft, naive_CT
 
 # =============================================================================
 # Response Kernel generation
