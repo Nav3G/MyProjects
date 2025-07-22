@@ -1,25 +1,6 @@
 import numpy as np
 
 # =============================================================================
-# Windowing functions for spectrum plotting
-# =============================================================================
-def make_window(L, window_type='rectangular'):
-    """
-    Return a window array of length N:
-    - 'rectangular': all ones
-    - 'hann'
-    - 'hamming'
-    """
-    n = np.arange(L)
-    if window_type == 'hann':
-        return 0.5 * (1 - np.cos(2 * np.pi * n / (L - 1)))
-    elif window_type == 'hamming':
-        return 0.54 - 0.46 * np.cos(2 * np.pi * n / (L - 1))
-    else:
-        return np.ones(L)
-
-# Various DFT techniques
-# =============================================================================
 # Naive DFT
 # =============================================================================
 def naive_dft(x):

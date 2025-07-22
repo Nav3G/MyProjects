@@ -1,7 +1,7 @@
+from DSP.transforms import radix2_fft, naive_CT
+
 import numpy as np
 import matplotlib.pyplot as plt
-
-from DSP.transforms import radix2_fft, naive_CT
 
 # =============================================================================
 # Response Kernel generation
@@ -138,7 +138,7 @@ def estimate_filter_length(A_att, fs, f_pass, f_stop):
 
 def build_kaiser_bessel(vi, al, terms=30):
     """
-    Compute the Kaiser‐Bessel kernel values at normalized positions vi for shape parameter alpha.
+    Compute the Kaiser-Bessel kernel values at normalized positions vi for shape parameter alpha.
     """
     vi = np.asarray(vi, float)
     d = al
