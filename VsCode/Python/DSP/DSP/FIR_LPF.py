@@ -255,7 +255,7 @@ def plot_kaiser_filter_response(h, fs, N_fft):
     Plot magnitude response of the FIR to verify specs.
     h  : FIR taps
     fs : sampling rate
-    M  : Plotting points
+    Nfft  : Plotting points
     """
     # 0-padding the response to length N_fft
     L = len(h)

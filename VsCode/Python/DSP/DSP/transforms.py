@@ -18,11 +18,11 @@ def naive_dft(x):
     x = np.concatenate([x, np.zeros(N - L)])
     X = np.zeros(N, dtype=complex)
     # DFT
-    for f in range(N):
+    for k in range(N):
         acc = 0+0j
         for n in range(N):
-            acc += x[n] * np.exp(-2j * np.pi * f * n / N)
-        X[f] = acc
+            acc += x[n] * np.exp(-2j * np.pi * k * n / N)
+        X[k] = acc
     return X
 
 # =============================================================================
