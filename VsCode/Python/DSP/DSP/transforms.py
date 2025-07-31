@@ -59,16 +59,21 @@ def bit_reverse(n, m):
         n >>= 1
     return r
 
-def radix2_fft(x):
+def radix2_fft(x, nfft=None):
     """
     In-place radix-2 decimation-in-time FFT. x is modified and returned.
     """
+
     N0 = len(x)
-    N = 1 << (N0-1).bit_length()    # next pow2 >= N0
-    pad_amt = N - N0
+    if nfft == None:
+        N = 1 << (N0-1).bit_length()    # next pow2 >= N0
+        pad_amt = N - N0
+    else:
+        N = nfft
+        pad_amt = N - N0
 
     # Pad out the data
-    X = np.concatenate([ x.astype(complex), np.zeros(pad_amt, dtype=complex) ])
+    X = np.concatenate([x.astype(complex), np.zeros(pad_amt, dtype=complex) ])
     assert N and (N & (N-1)) == 0, "Length must be a power of 2"
     m = int(np.log2(N))
     # Bit-reversal permutation

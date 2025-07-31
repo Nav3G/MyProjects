@@ -117,164 +117,252 @@ def sinc_brf(f1, f2, numtaps, fs):
 
     return h_ideal
 
-def remez_taps(filter_type, numtaps, fs, bands, desired, weights):
-    MAX_ITERS = 50
-    TOL = 1e-8
-    converged = False
+#================================================
+# Parks-Maclelan Algorithm for adaptive filtering
+#================================================
+def normalize_bands(bands, fs):
+    """
+    Normalizes the chosen bands by the sampling rate so they span [0, 1]
 
-    if filter_type not in ['lowpass', 'highpass', 'bandpass', 'bandreject']:
-        raise ValueError('Filter type not supported')
-    if numtaps % 2 == 0:
-        raise ValueError('Tap length must be odd')
-    
-    # Normalize frequency specs by fs so they lie in [0, 1] span
+    Args:
+        bands: tuple of ints
+            Band from start freqeuncy to end frequency (Hz).
+        fs: int
+            Sampling rate (Hz)
+
+    Returns: 
+        bands: array of tuples
+            Normalized bands
+    """
     nyq = fs / 2.0
-    norm_bands = []
-    for low, high in bands:
-        norm_bands.append((low / nyq, high / nyq))
 
-    # Linear-phase symmetry
-    M = (numtaps - 1)//2
+    return [(fL / nyq, fH/ nyq) for fL, fH in bands]
 
-    # Frequency grid - Basically, discretizing the bands into grids
-    K = 50
-    G = max(2000, K * (M + 1))
-    total_norm_bw = sum(fH - fL for fL, fH in norm_bands)
-    points_per_band = [max(3, int(round(G * (fH - fL) / total_norm_bw))) 
-                       for fL, fH in norm_bands]
-    points_per_band[0] += G - sum(points_per_band)
+def allocate_grid(norm_bands, G, min_pts=20):
+    """
+    Allocates a discrete grid of frequencies over which Chebyshev problem is solved.
 
-    grid_freqs, grid_desired, grid_weights = [], [], []
-    EDGE_MARGIN = 0.02
-    # Flat array of the discretized bands
-    for (fL, fH), di, wi, P in zip(norm_bands, desired, weights, points_per_band):
-        bw = fH - fL
+    Args:
+        norm_bands: tuple of ints
+            Band from start freqeuncy to end frequency (Hz) scaled to [0, 1].
+        G: int
+            Total number of grid points across all bands.
+        min_pts: int
+            The minimum number of samples given to a single band.
+        
+    Returns: 
+        bands: array of ints
+            The number of points allocated to each band.
+    """
+    # Sum all the bandwidths up
+    total_bw = sum(fH-fL for fL, fH in norm_bands)
+    # Allocate points to the grid, at least min_pts. Wider bands get more points
+    pts = [max(min_pts, int(round(G * (fH - fL) / total_bw))) for fL, fH in norm_bands]
+    pts[0] += G - sum(pts)
+
+    return pts
+
+def make_grid(norm_bands, desired, weights, pts_per_band, edge_margin):
+    freqs, des, wts = [], [], []
+    for (fL, fH), d, wt, P in zip(norm_bands, desired, weights, pts_per_band):
+        # Core points uniformly inside [fL, fH]
         core = np.linspace(fL, fH, P, endpoint=True)
-
-        m = EDGE_MARGIN * bw
-        n_edge = max(20, int(0.2 *P))
+        # Compute small skirt
+        bw = fH - fL
+        m = edge_margin*(bw)
+        # Ensure a few skirt points
+        n_edge = max(2, int(0.22 * P))
+        # Left and right skirts
         left_skirt = np.linspace(max(0, fL - m), fL, n_edge, endpoint=True)
         right_skirt = np.linspace(fH, min(1, fH + m), n_edge, endpoint=True)
+        # Concatenate
+        band_freqs = np.concatenate([left_skirt, core, right_skirt])
+        # Append
+        freqs.extend(band_freqs)
+        des.extend([d] * len(band_freqs))
+        wts.extend([wt] *  len(band_freqs))
+    # Remove duplicates (overlap)
+    unique_freqs, indices = np.unique(freqs, return_index=True)
+    freqs = np.array(freqs)[indices]    # Numpy slicing trick
+    des = np.array(des)[indices]
+    wts = np.array(wts)[indices]
+    # Sort by freq
+    order = np.argsort(freqs)
 
-        all_pts = np.concatenate([left_skirt, core, right_skirt])
-        grid_freqs.extend(all_pts)
-        grid_desired.extend([di] * len(all_pts))
-        grid_weights.extend([wi] * len(all_pts))
+    return freqs[order], des[order], wts[order]
 
-    # sort, dedup, covert
-    grid_freqs = np.array(grid_freqs)
-    grid_desired = np.array(grid_desired)
-    grid_weights = np.array(grid_weights)
+def solve_remez_system(ext_freqs, ext_desired, ext_weights, M, eps=1e-10):
+    N_ext = len(ext_freqs)
+    # Build the (m+2)x(M+2) system matrix A and RHS D
+    A = np.zeros((N_ext, N_ext))
+    D = np.zeros(N_ext)
 
-    order = np.argsort(grid_freqs)
-    grid_freqs   = grid_freqs[order]
-    grid_desired = grid_desired[order]
-    grid_weights = grid_weights[order]
+    for k, omega in enumerate(ext_freqs):
+        for m in range(M + 1):
+            A[k, m] = np.cos(m*np.pi*omega)
+        A[k, -1] = ((-1)**k) / ext_weights[k]
+        D[k] = ext_desired[k]
+    A += eps*np.eye(N_ext)
+    A_reg = np.vstack([
+        A,
+        np.sqrt(eps)*np.eye(N_ext)
+    ])
+    D_reg = np.concatenate([D, np.zeros(N_ext)])
+    x, *_ = np.linalg.lstsq(A_reg, D_reg, rcond=None)
 
-    uniq, ix = np.unique(np.round(grid_freqs, 8), return_index=True)
-    grid_freqs   = grid_freqs[ix]
-    grid_desired = grid_desired[ix]
-    grid_weights = grid_weights[ix]
+    return x[:M+1], x[M+1]
 
-    # Initilize extremal frequencies 
-    n_extrema = M + 2
-    G = len(grid_freqs)
-    delta_spacing = (G - 1)/(n_extrema - 1)
-    ext_idx = [int(round(k * delta_spacing)) for k in range(n_extrema)]
+def compute_error(a, grid_freqs, grid_desired, grid_weights):
+    omega = grid_freqs * np.pi
+    # (M+1)xG cosine-matrix
+    cos_mat = np.cos(np.outer(np.arange(len(a)), omega))
+    A = a @ cos_mat
+    # Error
+    E = grid_weights * (grid_desired - A)
 
-    ext_freq = [grid_freqs[i] for i in ext_idx]
-    ext_desired = [grid_desired[i] for i in ext_idx]
-    ext_weights = [grid_weights[i] for i in ext_idx]
+    return E
 
-    # Ramez iteration
-    prev_ext_idx = ext_idx.copy()
-    prev_delta = None
+def find_extrema(E, n_extrema):
+    N = len(E)
+    # Locate all “true” extrema inside the grid
+    cand = [i for i in range(1, N-1)
+            if (E[i]>E[i-1] and E[i]>E[i+1]) or
+               (E[i]<E[i-1] and E[i]<E[i+1])]
+    # Sort by descending |E[i]|
+    cand.sort(key=lambda i: abs(E[i]), reverse=True)
+    # Pick the strongest alternating extrema
+    ext = [0]
+    last_sign = np.sign(E[0])
+    for i in cand:
+        s = np.sign(E[i])
+        if s != last_sign:
+            ext.append(i)
+            last_sign = s
+        if len(ext) == n_extrema-1:
+            break
+    ext.append(N-1)
 
-    for j in range(1, MAX_ITERS + 1):
-        A = np.zeros((M + 2, M + 2))
-        D = np.zeros(n_extrema)
-        eps = 1e-10
-
-        for k in range(n_extrema):
-            omega = ext_freq[k] * np.pi
-            for m in range(M + 1):
-                A[k, m] = np.cos(m*omega)
-            A[k, -1] = ((-1)**k)/ext_weights[k]
-            D[k] = ext_desired[k]
-        A += np.eye(M+2)*eps
-        x = np.linalg.solve(A, D)
-        a = x[:M+1]                  # Coefs. of the Chebychev polynomial approx. of H
-        d_ripple = x[M+1]
-        delta = d_ripple
-
-        # Response and error
-        # We enforce that the weighted deviation of H from the desired output
-        # must, in the discrete sense, alternate in sign by a swing of at most
-        # 2*delta (a ripple amplitude of delta).
-        H = np.zeros(G)
-        for i, f in enumerate(grid_freqs):
-            omega = f * np.pi
-            H[i] = np.dot(a, np.cos(np.arange(M+1) * omega))
-        E = np.array(grid_weights) * (np.array(grid_desired) - H)
-
-        # Extrema of Error
-        cand = []
-        for i in range(1, len(E) - 1):
-            if (E[i] < E[i + 1] and E[i] < E[i - 1]) or \
-            (E[i] > E[i + 1] and E[i] > E[i - 1]):
-                cand.append(i)
-        cand_sorted = sorted(cand, key=lambda i: abs(E[i]), reverse=True)
-
-        # Pick top M + 2 extrema whose signs strictly alternate. Stop at Err = M + 2
-        new_ext_idx = []
-        last_sign = None
-        for i in cand_sorted:
-            sign = np.sign(E[i])
-            if last_sign is None or sign != last_sign:
-                new_ext_idx.append(i)
-                last_sign = sign
-            if len(new_ext_idx) == M + 2:
+    # PADDING
+    # First pad with with the remaining true peaks from the last pass
+    if len(ext) < n_extrema:
+        for i in cand:
+            if i not in ext:
+                ext.append(i)
+            if len(ext) == n_extrema:
                 break
+    # Then fill uniformly until the end (should be very few points)
+    if len(ext) < n_extrema:
+        uniform = np.round(np.linspace(0, N-1, n_extrema)).astype(int)
+        for i in uniform:
+            if len(ext) == n_extrema:
+                break
+            if i not in ext:
+                ext.append(i)
+    
+    return sorted(ext[:n_extrema])
 
-        if len(new_ext_idx) < n_extrema:
-            new_ext_idx = prev_ext_idx.copy()
-        new_ext_idx.sort()
+def remez_taps(numtaps, fs, bands, desired, weights, 
+               eps, grid_mul, edge_margin, max_iters, 
+               return_delta_history=False):
+    norm_bands = normalize_bands(bands, fs)
 
-        # Update extremal sets
-        ext_idx = new_ext_idx
-        ext_freq = [grid_freqs[i] for i in ext_idx]
-        ext_desired = [grid_desired[i] for i in ext_idx]
-        ext_weights = [grid_weights[i] for i in ext_idx]
+    M = (numtaps - 1)//2
+    G = max(200, grid_mul*(M+1))
 
-        # Convergence check
-        same_extrema = (prev_ext_idx is not None and prev_ext_idx == new_ext_idx)
-        small_delta = (prev_delta is not None and abs(delta - prev_delta) < TOL)
+    pts_per_band = allocate_grid(norm_bands, G, min_pts=10)
 
-        if same_extrema and small_delta:
+    grid_freqs, grid_des, grid_wts = make_grid(
+        norm_bands, desired, weights, pts_per_band, edge_margin,
+    )
+
+    n_extrema = M + 2
+    # Initial extremal indices
+    N = len(grid_freqs)
+    k        = np.arange(n_extrema)
+    xk       = np.cos(np.pi * k/(n_extrema-1))
+    ext_idx  = np.round((1 - xk) * (N-1)/2).astype(int) 
+
+    delta_hist = []
+    prev_delta = None
+    converged = None
+    tol = 1e-4
+    for j in range(1, max_iters + 1):
+        assert len(ext_idx) == n_extrema, f"wrong #extrema: {len(ext_idx)} != {M+2}"
+        a, delta = solve_remez_system(
+            grid_freqs[ext_idx],
+            grid_des[ext_idx],
+            grid_wts[ext_idx],
+            M, 
+            eps
+        )  
+        delta_hist.append(delta)
+
+        E = compute_error(a, grid_freqs, grid_des, grid_wts)
+        cand_ext_idx = find_extrema(E, n_extrema)
+
+        # Convergence checks
+        same_ext = np.array_equal(ext_idx, cand_ext_idx)
+        if prev_delta is not None:
+            rel_change = abs(abs(delta) - abs(prev_delta)) / abs(delta)
+            mag_stable = rel_change < tol
+        else:
+            mag_stable = False
+
+        if j >= 5 and mag_stable and same_ext:
             converged = True
             break
-
+ 
+        ext_idx = cand_ext_idx
         prev_delta = delta
-        prev_ext_idx = ext_idx.copy()
 
-    if not converged:
-        warnings.warn(
-            f"Parks-McClellan did not converge in {MAX_ITERS} iterations; "
-            f"last ripple change = {abs(delta - prev_delta):.2e}",
-            UserWarning
-        )
-    else: 
-        print("Iters for convergence: " + str(j))
-
-    h = np.zeros(2*M+1)
+    h = np.zeros(2*M + 1)
     h[M] = a[0]
     for k in range(1, M+1):
         h[M+k] = h[M-k] = a[k]/2
+
+    return h, converged, delta_hist
+
+
+def adaptive_remez_taps(numtaps, fs, bands, desired, weights, 
+                        init_eps=1e-6, init_grid_mul=20, init_edge=0.001,
+                        max_stages=5):
+    eps = init_eps
+    grid_mul = init_grid_mul
+    edge_margin = init_edge
+
+    h = None
+    for stage in range(max_stages):
+        try:
+            h, converged, delta_hist = remez_taps(
+                numtaps, fs, bands, desired, weights,
+                eps=eps,
+                grid_mul=grid_mul,
+                edge_margin=edge_margin,
+                max_iters=100,
+                return_delta_history=True
+            )
+        except IndexError:
+            converged = False
+
+        plt.plot(delta_hist, marker='o')
+        plt.xlabel('Iteration')
+        plt.ylabel('Ripple amplitude δ')
+        plt.title('Convergence history')
+        plt.grid(True)
+        plt.show()
+
+        if converged:
+            print(f"Coverged at stage {stage + 1}")
+            return h
         
+        print(f"Stage {stage+1} failed: tweaking params")
+        eps *= 10
+        edge_margin = min(0.015, edge_margin * 1.5)
+
     return h
 
 #===============================
-# PLotting 
+# Plotting 
 #===============================
 def plot_kernel(w, **plot_kwargs):
 
@@ -283,9 +371,9 @@ def plot_kernel(w, **plot_kwargs):
     plt.ylabel('Amplitude')
     plt.title('Sinc Kernel')
 
-def plot_filter_response(h, fs, **plot_kwargs):
+def plot_filter_response(h, fs, nfft, **plot_kwargs):
 
-    freq, H_db = spectrum(h, fs, 'fft', 'hann')
+    freq, H_db = spectrum(h, fs, nfft, 'fft')
     plt.plot(freq, H_db, **plot_kwargs)
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('Magnitude [dB]')

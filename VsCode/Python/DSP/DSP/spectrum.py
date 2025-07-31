@@ -1,6 +1,7 @@
 from DSP.transforms import *
 
 import numpy as np
+from scipy import signal
 
 # =============================================================================
 # Windowing functions for spectrum plotting
@@ -34,7 +35,7 @@ def make_plotting_window(L, window_type='rectangular'):
 # =============================================================================
 # Generic Spectrum Generation
 # =============================================================================
-def spectrum(x, fs, method='fft', window=None):
+def spectrum(x, fs, nfft=512, method='fft', window=None):
     """
     Compute a one-sided magnitude spectrum (dB) of a real-valued signal.
 
@@ -59,9 +60,11 @@ def spectrum(x, fs, method='fft', window=None):
     x_win = x * w
     # Compute FFT
     if method=='fft':
-        X = radix2_fft(x_win.astype(complex).copy())
+        X = radix2_fft(x_win.astype(complex).copy(), nfft)
     elif method=='CT':
         X = naive_CT(x_win)
+    elif method=='scipy_fft':
+        X = np.fft.fft(x, nfft)
     else:
         X = naive_dft(x_win)
     # Find the actual FFT length and the “half‑spectrum” length
