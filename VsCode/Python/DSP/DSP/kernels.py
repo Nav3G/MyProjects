@@ -241,7 +241,6 @@ def find_extrema(E, n_extrema):
         if len(ext) == n_extrema-1:
             break
     ext.append(N-1)
-
     # PADDING
     # First pad with with the remaining true peaks from the last pass
     if len(ext) < n_extrema:

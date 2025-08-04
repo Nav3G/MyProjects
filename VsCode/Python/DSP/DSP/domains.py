@@ -23,7 +23,7 @@ def times(fs, L):
 # =============================================================================
 def generate_signal(L, freqs, amps, noise_level, t):
     """
-    Create a synthetic signal: two sinusoids plus white Gaussian noise.
+    Create a synthetic signal: Sinusoids plus white Gaussian noise.
     """
     noise = np.random.randn(L) * noise_level
     signal = 0

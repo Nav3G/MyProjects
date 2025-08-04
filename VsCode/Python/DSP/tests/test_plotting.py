@@ -34,7 +34,7 @@ def test_plotting_one_freq_signal_default():
     amps = np.array([0.5, 1, 0.2]) 
     s = generate_signal(L, tones, amps, 0.001, times(fs, L))
 
-    fig, ax = plot_signal(s, fs, 'freq', ['naive'])
+    fig, ax = plot_signal(s, fs, 'freq', None, None, ['naive'])
     ax.plot()
     plt.legend()
     plt.show()
@@ -46,7 +46,7 @@ def test_plotting_one_freq_signal_xlims():
     amps = np.array([0.5, 1, 0.2]) 
     s = generate_signal(L, tones, amps, 0.001, times(fs, L))
 
-    fig, ax = plot_signal(s, fs, 'freq', None, (100, 300), ['fft'])
+    fig, ax = plot_signal(s, fs, 'freq', None, None, (100, 300), ['fft'])
     ax.plot()
     plt.legend()
     plt.show()

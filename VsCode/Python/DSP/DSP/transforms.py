@@ -3,41 +3,35 @@ import numpy as np
 # =============================================================================
 # Naive DFT
 # =============================================================================
-def naive_dft(x):
+def naive_dft(x, nfft):
     """
     Direct O(N^2) implementation of DFT.
     """
-
-    # Determing if signal is a power of 2 long
-    L = len(x)
-    if L & (L - 1) != 0:
-        N = 2**np.ceil(np.log2(L))
-    else:
-        N = L
-    # Pad signal up to a power of 2 with zeros
-    x = np.concatenate([x, np.zeros(N - L)])
-    X = np.zeros(N, dtype=complex)
+    X = np.zeros(nfft, dtype=complex)
     # DFT
-    for k in range(N):
+    for k in range(nfft):
         acc = 0+0j
-        for n in range(N):
-            acc += x[n] * np.exp(-2j * np.pi * k * n / N)
+        for n in range(nfft):
+            acc += x[n] * np.exp(-2j * np.pi * k * n / nfft)
         X[k] = acc
     return X
 
 # =============================================================================
 # Recursive Cooley–Tukey FFT 
 # =============================================================================
-def naive_CT(x):
+def naive_CT(x, nfft=None):
     """
     Recursive radix-2 FFT (divide & conquer) with O(N log N) complexity.
     """
-    L = len(x)
-    N = 1 << (L-1).bit_length()
-
-    # 0-padding to power of 2 length
-    X = np.concatenate([x, np.zeros(N - L)])
-    # Even-Odd recursive ffts
+    N0 = len(x)
+    if nfft == None:
+        N = 1 << (N0-1).bit_length()    # next pow2 >= N0
+        pad_amt = N - N0
+    else:
+        N = nfft
+        pad_amt = N - N0
+    X = np.concatenate([x, np.zeros(pad_amt)])
+    # Even-Odd recursive DFTs
     if N == 1:
         return np.array(X, dtype=complex)
     even = naive_CT(X[::2])
@@ -73,7 +67,7 @@ def radix2_fft(x, nfft=None):
         pad_amt = N - N0
 
     # Pad out the data
-    X = np.concatenate([x.astype(complex), np.zeros(pad_amt, dtype=complex) ])
+    X = np.concatenate([x.astype(complex), np.zeros(pad_amt, dtype=complex)])
     assert N and (N & (N-1)) == 0, "Length must be a power of 2"
     m = int(np.log2(N))
     # Bit-reversal permutation

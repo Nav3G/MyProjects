@@ -50,23 +50,10 @@ def test_equiripple_remez_taps_bpf():
 def test_equiripple_remez_taps_lpf():
     fs = 4096
     bands = [(0, 500), (600, fs/2)]
-    desired = [1, 0]
+    desired = [1, 0.1]
     weights = [1, 10]
-    h = adaptive_remez_taps(101, fs, bands, desired, weights, 1e-6, 20, 0.0, 1)  
+    h = adaptive_remez_taps(101, fs, bands, desired, weights, 1e-6, 16, 0.0, 1)  
     plot_filter_response(h, fs, 4096)
-    plt.show()
-
-def test_equiripple_remez_taps_lpf2():
-    fs = 4096
-    bands = [(0, 500), (600, fs/2)]
-    desired = [1, 0]
-    weights = [1, 10]
-    h = adaptive_remez_taps(101, fs, bands, desired, weights, 1e-6, 20, 0.0, 1)  
-    w, H = signal.freqz(h,   worN=4096, fs=fs)
-    plt.plot(w, 20*np.log10(np.abs(H)), '-', label='mine', alpha=0.8)
-    plt.title('Filter Comparison')
-    plt.xlabel('Frequency [Hz]')
-    plt.ylabel('Magnitude [dB]')
     plt.show()
 
 def test_scipy_remez_lpf():

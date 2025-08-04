@@ -67,11 +67,10 @@ def spectrum(x, fs, nfft=512, method='fft', window=None):
         X = np.fft.fft(x, nfft)
     else:
         X = naive_dft(x_win)
-    # Find the actual FFT length and the “half‑spectrum” length
-    N_fft = len(X)
-    half  = N_fft//2
+    # Find the “half‑spectrum” length (nyquist)
+    half = nfft//2
     # Build the matching frequency axis
-    freqs = np.arange(N_fft) * (fs / N_fft)     # freqs[n] = n*fs/Nfft
+    freqs = np.arange(nfft) * (fs / nfft)     # freqs[n] = n*fs/nfft
     # Compute magnitude in dB
     mags_db = 20*np.log10(np.abs(X[:half]) + 1e-12)
     # Return just the positive‑freq half
