@@ -69,7 +69,7 @@ def plot_signal(x_list, fs, domain ='time', tlim: tuple[float,float]=None,
         else:
             data_list, method_labels =[], []
             for m in methods[i]:
-                f, M = spectrum(x, fs, m, window[i])
+                f, M = spectrum(x, fs, len(x), m, window[i])
                 data_list.append((f, M))
                 method_labels.append(m)
         for (t, data), lab in zip(data_list, method_labels):
@@ -90,4 +90,84 @@ def plot_signal(x_list, fs, domain ='time', tlim: tuple[float,float]=None,
 
     return fig, ax
 
+def plot_time(xs, t, title, axislabels=None, axislims=None, **kwargs):
+    """
+    Time domain plot of a set of signals.
+    """
+    if axislabels is not None:
+        if (not isinstance(axislabels, tuple) or
+            len(axislabels) != 2 or
+            not all(isinstance(lbl, str) for lbl in axislabels)):
+            raise TypeError(
+                "axislabels must be a tuple of two strings: (xlabel, ylabel)"
+            )
         
+    if axislims is not None:
+        # Must be a tuple of length 2
+        if not isinstance(axislims, tuple) or len(axislims) != 2:
+                raise TypeError(
+                    "axislims must be a tuple of two tuples: ((xmin, xmax), (ymin, ymax))"
+                )
+        xlim, ylim = axislims
+
+        # Validate xlim if given
+        if xlim is not None:
+            if (not isinstance(xlim, tuple) or len(xlim) != 2 or
+                not all(isinstance(v, (int, float)) for v in xlim)):
+                raise TypeError(
+                    "xlims must be a tuple of two numbers, e.g. (xmin, xmax)"
+                )
+            xmin, xmax = xlim
+            if xmin >= xmax:
+                raise ValueError(f"x-axis min ({xmin}) must be less than max ({xmax})")
+
+        # Validate ylim if given
+        if ylim is not None:
+            if (not isinstance(ylim, tuple) or len(ylim) != 2 or
+                not all(isinstance(v, (int, float)) for v in ylim)):
+                raise TypeError(
+                    "ylims must be a tuple of two numbers, e.g. (ymin, ymax)"
+                )
+            ymin, ymax = ylim
+            if ymin >= ymax:
+                raise ValueError(f"y-axis min ({ymin}) must be less than max ({ymax})")
+
+    signals = xs if isinstance(xs, list) else [xs]
+        
+    fig, ax = plt.subplots()
+    for idx, x in enumerate(signals, start=1):
+        ax.plot(t, x, label=f"Signal {idx}")
+
+    ax.set_title(title if title is not None else 'Time Domain Signal')
+    
+    if axislabels is not None:
+        xlabel, ylabel = axislabels
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+    else:
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel('Amplitude')
+
+    if axislims:
+        if xlim is not None:
+            ax.set_xlim(*xlim)
+        if ylim is not None:
+            ax.set_ylim(*ylim)
+       
+    ax.grid(True)
+    ax.legend()
+
+    return fig, ax
+
+def plot_spectrum(*args, title='Frequency Spectrum', **kwargs):
+    freqs, M = spectrum(*args, **kwargs)
+
+    fig, ax = plt.subplots()
+
+    ax.plot(freqs, M)
+    ax.set_title(title)
+    ax.set_xlabel('Frequency (Hz)')
+    ax.set_ylabel('Magnitude (dB)')
+    ax.grid(True)
+
+    return fig, ax

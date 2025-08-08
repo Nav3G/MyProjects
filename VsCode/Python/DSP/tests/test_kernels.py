@@ -21,28 +21,28 @@ def test_plot_brf_sinc():
     plt.show()
 
 def test_lpf_response():
-    plot_filter_response(sinc_lpf(350, 101, 4096), 4096, 4096)
+    plot_filter_response(sinc_lpf(350, 101, 2048), 2048, 512)
     plt.show()
 
 def test_hpf_response():
-    plot_filter_response(sinc_hpf(500, 101, 4096), 4096, 4096)
+    plot_filter_response(sinc_hpf(1500, 101, 2048), 2048, 512)
     plt.show()
 
 def test_bpf_response():
-    plot_filter_response(sinc_bpf(1000, 1500, 101, 4096), 4096, 4096)
+    plot_filter_response(sinc_bpf(1000, 1500, 101, 2048), 2048, 512)
     plt.ylim(-100, 10)
     plt.show()
 
 def test_brf_response():
-    plot_filter_response(sinc_brf(200, 300, 301, 4096), 4096, 4096)
+    plot_filter_response(sinc_brf(200, 300, 301, 2048), 2048, 512)
     plt.show()
 
 def test_equiripple_remez_taps_bpf():
     fs = 4096
-    bands = [(0, 520), (600, 1420), (1500, fs/2)]
-    desired = [0, 1, 0]
+    bands = [(0, 900), (1000, 1220), (1300, fs/2)]
+    desired = [0.1, 1, 0.1]
     weights = [10, 1, 10]
-    h = adaptive_remez_taps(101, fs, bands, desired, weights, 1e-6, 16, 0.0, 4)  
+    h = adaptive_remez_taps(101, fs, bands, desired, weights, 1e-6, 16, 0.0, 1)  
     plot_filter_response(h, fs, 4096)
     plt.ylim((-100, 10))
     plt.show()
@@ -60,7 +60,7 @@ def test_scipy_remez_lpf():
     numtaps = 101
     fs = 4096
     bands = [0, 500, 600, fs/2]
-    desired = [1, 0]
+    desired = [1, 0.1]
     weights = [1, 10]
 
     h_ref = signal.remez(numtaps, bands, desired, weight=weights, fs=fs)
