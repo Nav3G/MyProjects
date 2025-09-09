@@ -1,36 +1,8 @@
 from DSP.transforms import *
+from DSP.windows import *
 
 import numpy as np
 from scipy import signal
-
-# =============================================================================
-# Windowing functions for spectrum plotting
-# =============================================================================
-def make_plotting_window(L, window_type='rectangular'):
-    """
-    Generate a time-domain window for spectrum plotting.
-
-    Args:
-        L: int
-            Length of the window to generate.
-        window_type: str, optional
-            Type of window to return (default 'rectangular'):
-            - 'rectangular': all ones (no taper).
-            - 'hann': Hann window, 0.5*(1-cos(2πn/(L-1))).
-            - 'hamming': Hamming window, 0.54-0.46*cos(2πn/(L-1)).
-
-    Returns: 
-        w: Window coefficients.
-   """   
-    
-    n = np.arange(L)
-    if window_type == 'hann':
-        return 0.5 * (1 - np.cos(2 * np.pi * n / (L - 1)))
-    elif window_type == 'hamming':
-        return 0.54 - 0.46 * np.cos(2 * np.pi * n / (L - 1))
-    else:
-        return np.ones(L)
-
 
 # =============================================================================
 # Generic Spectrum Generation

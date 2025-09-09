@@ -159,15 +159,27 @@ def plot_time(xs, t, title, axislabels=None, axislims=None, **kwargs):
 
     return fig, ax
 
-def plot_spectrum(*args, title='Frequency Spectrum', **kwargs):
-    freqs, M = spectrum(*args, **kwargs)
-
+def plot_spectrum(*spectra_args, title='Frequency Spectrum', labels=None, 
+                  styles=None, **default_kwargs):
     fig, ax = plt.subplots()
 
-    ax.plot(freqs, M)
+    for i , args in enumerate(spectra_args):
+        x, fs, Nfft, fft_type, window_type = args
+        freqs, M = spectrum(x, fs, Nfft, fft_type, window_type)
+        label = labels[i] if labels is not None and i < len(labels) else None
+
+        plot_kwargs = default_kwargs.copy()
+        if styles and i < len(styles):
+            plot_kwargs.update(styles[i])
+
+        ax.plot(freqs, M, label=label, **plot_kwargs)
+ 
     ax.set_title(title)
     ax.set_xlabel('Frequency (Hz)')
     ax.set_ylabel('Magnitude (dB)')
     ax.grid(True)
+
+    if labels:
+        ax.legend()
 
     return fig, ax
